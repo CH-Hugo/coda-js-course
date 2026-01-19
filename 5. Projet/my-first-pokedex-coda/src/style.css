@@ -1,96 +1,131 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --cgear-blue: #00d4ff;
+  --cgear-dark: #050b14;
+  --cgear-card: rgba(0, 212, 255, 0.05);
+  --border-glow: rgba(0, 212, 255, 0.3);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  background-color: var(--cgear-dark);
+  /* Motif hexagonal subtil en fond */
+  background-image: 
+    radial-gradient(var(--cgear-card) 2px, transparent 2px);
+  background-size: 30px 30px;
+  color: white;
+  font-family: 'Orbitron', 'Segoe UI', sans-serif; /* Une police techno si possible */
 }
 
 #app {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 40px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-.card {
-  padding: 2em;
+h1 {
+  text-align: left;
+  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  color: var(--cgear-blue);
+  border-left: 8px solid var(--cgear-blue);
+  padding-left: 20px;
+  margin-bottom: 50px;
+  filter: drop-shadow(0 0 10px var(--cgear-blue));
 }
 
-.read-the-docs {
-  color: #888;
+/* Barre de recherche "Terminal" */
+#search-input {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--cgear-blue);
+  padding: 15px 25px;
+  color: var(--cgear-blue);
+  font-size: 1.1rem;
+  clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+  outline: none;
+  margin-bottom: 40px;
+}
+
+/* Grille de cartes */
+#pokemon-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  padding: 0;
+  list-style: none;
+}
+
+.pokemon-item {
+  background: var(--cgear-card);
+  border: 1px solid var(--border-glow);
+  padding: 20px;
+  position: relative;
+  /* Coins biseautés style C-Gear */
+  clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pokemon-item::before {
+  content: "LINK ESTABLISHED";
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  font-size: 0.6rem;
+  color: var(--cgear-blue);
+  opacity: 0.5;
+}
+
+.pokemon-item:hover {
+  background: rgba(0, 212, 255, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px var(--border-glow);
+  border-color: var(--cgear-blue);
+}
+
+.pokemon-item img {
+  width: 130px;
+  height: 130px;
+  filter: drop-shadow(0 0 5px var(--cgear-blue));
+}
+
+.pokemon-item span {
+  margin-top: 15px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1px;
+}
+
+/* Pagination style Console */
+.pagination-controls {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  background: transparent;
+  border: 2px solid var(--cgear-blue);
+  color: var(--cgear-blue);
+  padding: 10px 30px;
+  font-weight: bold;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  text-transform: uppercase;
+  transition: 0.3s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover:not(:disabled) {
+  background: var(--cgear-blue);
+  color: black;
+}
+
+button:disabled {
+  border-color: #333;
+  color: #333;
 }
