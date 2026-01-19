@@ -1,3 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');*
+
+.blink {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px; /* Conseil : utilise des multiples de 8 (8, 16, 24) pour que ce soit net */
+  color: #000000;
+  animation: fade 1.5s infinite;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+
+}
+@keyframes fade { 50% { opacity: 0; } }
+
+.kyurem-sprite {
+  height: 400px; 
+  image-rendering: pixelated; 
+  margin: -50px 0 20px 0; 
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+}
+
+/* --- GESTION DES SCENES --- */
+.hidden {
+  display: none !important;
+}
+
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+/* --- STYLE DU MONDE 2D --- */
+#game-world {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+#room {
+  width: 500px;
+  height: 400px;
+  background: #6080a0; /* Couleur sol BW2 */
+  border: 8px solid #333;
+  position: relative;
+  image-rendering: pixelated;
+}
+
+#pc-desk {
+  width: 60px;
+  height: 40px;
+  background: #333; /* On mettra un sprite de PC après */
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom: 4px solid #555;
+}
+
+#player {
+  width: 32px;
+  height: 32px;
+  background: #ff3e3e; /* Ton perso (carré rouge en attendant les sprites) */
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%) scale(2);
+  transition: all 0.1s linear;
+}
+
 :root {
   --cgear-blue: #00d4ff;
   --cgear-dark: #050b14;
@@ -128,4 +208,54 @@ button:hover:not(:disabled) {
 button:disabled {
   border-color: #333;
   color: #333;
+}
+
+/* Flo */
+
+.pokemon-item {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#pokemon-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.modal-content {
+    background: var(--cgear-dark);
+    border: 3px solid var(--cgear-blue);
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
+    box-shadow: 0 0 30px var(--cgear-blue);
+    text-align: center;
+}
+
+#close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--cgear-blue);
+    color: black;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-family: inherit;
+    font-weight: bold;
 }

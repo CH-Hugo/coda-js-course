@@ -6,13 +6,32 @@
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
+  <div id="intro-screen">
+    <div class="intro-content">
+      <img src="src/assets/kuyrem.gif" class="kyurem-sprite">
+      <p class="blink">APPUYEZ SUR UNE TOUCHE</p>
+    </div>
+  </div>
+
+  <div id="game-world" class="hidden">
+    <div id="room">
+      <div id="pc-desk"></div> <div id="player" class="back"></div> </div>
+    
+    <div id="dialogue-box" class="hidden">
+      <div class="dialogue-inner">
+        <p id="dialogue-text"></p>
+        <span class="dialogue-arrow">▼</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="pokedex-app" class="hidden">
     <div id="app">
       <h1>Pokédex</h1>
       
-<div class="controls">
-  <label for="search-input">Rechercher un Pokémon :</label>
-  <input type="text" id="search-input" placeholder="Ex: Pikachu...">
-</div>
+      <div class="controls">
+        <input type="text" id="search-input" placeholder="Rechercher un Pokémon...">
+      </div>
 
       <ul id="pokemon-list"></ul>
 
@@ -23,22 +42,14 @@
       </div>
     </div>
 
-
-    <div id="pokemon-modal" class="hidden">
-      <div class="modal-content">
-        <button id="close-modal">X</button>
-        <div id="modal-body"></div>
-      </div>
-    </div>
-    
-    <div id="pokemon-modal" class="hidden">
+  <div id="pokemon-modal" class="hidden">
     <div class="modal-content">
-        <button id="close-modal">Fermer</button>
+        <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
         <div id="modal-body">
-            </div>
+        </div>
     </div>
 </div>
 
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
