@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Mon Pokédex</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
@@ -32,13 +33,26 @@
       <div class="controls">
         <input type="text" id="search-input" placeholder="Rechercher un Pokémon...">
       </div>
+=======
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="app">
+    <h1>Pokédex</h1>
+>>>>>>> 421ca0876a493a7ed2a5ca368776f5ffbb172042
 
-      <ul id="pokemon-list"></ul>
+    <div class="controls">
+        <label for="search-input">Rechercher un Pokémon :</label>
+        <input type="text" id="search-input" placeholder="Ex: Pikachu...">
+    </div>
 
-      <div class="pagination-controls">
+    <ul id="pokemon-list"></ul>
+
+    <div class="pagination-controls">
         <button id="prev-page">Précédent</button>
         <span id="page-info">Page 1</span>
         <button id="next-page">Suivant</button>
+<<<<<<< HEAD
       </div>
     </div>
 
@@ -51,5 +65,19 @@
 </div>
 
   <script type="module" src="/src/main.ts"></script>
+=======
+    </div>
+</div>
+
+<div id="pokemon-modal" class="hidden">
+    <div class="modal-content">
+        <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
+        <div id="modal-body">
+        </div>
+    </div>
+</div>
+
+<script type="module" src="src/main.ts"></script>
+>>>>>>> 421ca0876a493a7ed2a5ca368776f5ffbb172042
 </body>
 </html>
