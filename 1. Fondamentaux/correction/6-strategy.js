@@ -17,30 +17,30 @@
 // de calcul d'aire pour différentes formes géométriques
 
 const strategiesAire = {
-    // TODO : Stratégie pour le rectangle
-    // Formule : largeur × hauteur
-    // Paramètres : largeur, hauteur
-    rectangle: null, // Remplacer null par une fonction
+  // TODO : Stratégie pour le rectangle
+  // Formule : largeur × hauteur
+  // Paramètres : largeur, hauteur
+  rectangle: (largeur, hauteur) => largeur * hauteur, // Remplacer null par une fonction
 
-    // TODO : Stratégie pour le carré
-    // Formule : côté × côté
-    // Paramètres : cote
-    carre: null, // Remplacer null par une fonction
+  // TODO : Stratégie pour le carré
+  // Formule : côté × côté
+  // Paramètres : cote
+  carre: (cote) => Math.pow(cote, 2), // Remplacer null par une fonction
 
-    // TODO : Stratégie pour le triangle
-    // Formule : (base × hauteur) / 2
-    // Paramètres : base, hauteur
-    triangle: null, // Remplacer null par une fonction
+  // TODO : Stratégie pour le triangle
+  // Formule : (base × hauteur) / 2
+  // Paramètres : base, hauteur
+  triangle: null, // Remplacer null par une fonction
 
-    // TODO : Stratégie pour le cercle
-    // Formule : π × rayon²
-    // Paramètres : rayon
-    cercle: null, // Remplacer null par une fonction
+  // TODO : Stratégie pour le cercle
+  // Formule : π × rayon²
+  // Paramètres : rayon
+  cercle: null, // Remplacer null par une fonction
 
-    // TODO : Stratégie pour le trapèze
-    // Formule : ((petiteBase + grandeBase) × hauteur) / 2
-    // Paramètres : petiteBase, grandeBase, hauteur
-    trapeze: null, // Remplacer null par une fonction
+  // TODO : Stratégie pour le trapèze
+  // Formule : ((petiteBase + grandeBase) × hauteur) / 2
+  // Paramètres : petiteBase, grandeBase, hauteur
+  trapeze: null, // Remplacer null par une fonction
 };
 
 // ===================================
@@ -54,9 +54,17 @@ const strategiesAire = {
 // - Retourne l'aire calculée ou un message d'erreur si la forme n'existe pas
 
 function calculerAire(forme, ...dimensions) {
-    // TODO : Vérifier si la forme existe dans strategiesAire
-    // TODO : Si la forme n'existe pas, retourner un message d'erreur
-    // TODO : Sinon, appeler la stratégie correspondante avec les dimensions
+  // TODO : Vérifier si la forme existe dans strategiesAire
+  // TODO : Si la forme n'existe pas, retourner un message d'erreur
+  // TODO : Sinon, appeler la stratégie correspondante avec les dimensions
+
+  const aireFunc = strategiesAire[forme];
+  if (!aireFunc) {
+    console.log("Forme non accepté");
+    return;
+  }
+
+  return strategiesAire[forme](...dimensions);
 }
 
 // ===================================
@@ -69,9 +77,14 @@ function calculerAire(forme, ...dimensions) {
 // - Affiche un résultat formaté dans la console
 
 function afficherResultat(forme, ...dimensions) {
-    // TODO : Appeler calculerAire
-    // TODO : Afficher le résultat de manière lisible
-    // Format suggéré : "L'aire du [forme] est de [resultat] unités²"
+  // TODO : Appeler calculerAire
+  // TODO : Afficher le résultat de manière lisible
+  // Format suggéré : "L'aire du [forme] est de [resultat] unités²"
+
+  const result = calculerAire(forme, ...dimensions);
+  if (result != null) {
+    console.log(`L'aire du [${forme}] est de [${result}] unités²`);
+  }
 }
 
 // ===================================
@@ -81,7 +94,7 @@ function afficherResultat(forme, ...dimensions) {
 // TODO : Créer une fonction qui retourne la liste des formes disponibles
 
 function listerFormesDisponibles() {
-    // Votre code ici
+  // Votre code ici
 }
 
 // ===================================
@@ -93,13 +106,13 @@ console.log("=== TESTS DU CALCULATEUR D'AIRES ===\n");
 // Test 1 : Rectangle
 console.log("Test 1 - Rectangle (5 × 3) :");
 // TODO : Décommenter après avoir complété la fonction
-// afficherResultat("rectangle", 5, 3);
+afficherResultat("rectangle", 5, 3);
 console.log();
 
 // Test 2 : Carré
 console.log("Test 2 - Carré (côté = 4) :");
 // TODO : Décommenter après avoir complété la fonction
-// afficherResultat("carre", 4);
+afficherResultat("carre", 4);
 console.log();
 
 // Test 3 : Triangle
@@ -123,7 +136,7 @@ console.log();
 // Test 6 : Forme inexistante
 console.log("Test 6 - Forme inexistante :");
 // TODO : Décommenter après avoir complété la fonction
-// afficherResultat("pentagone", 5);
+afficherResultat("pentagone", 5);
 console.log();
 
 // ===================================

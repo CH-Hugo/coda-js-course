@@ -18,9 +18,20 @@ let totalFinal = 0; // Montant total final à payer
 // - Montant > 100€ : -5%
 // Les réductions ne se cumulent pas, prendre la meilleure
 
+if (estJourDeSoldes) {
+  reductionAppliquee = 20;
+} else if (possedeCarteFidelite) {
+  reductionAppliquee = 10;
+} else if (montantPanier > 100) {
+  reductionAppliquee = 5;
+}
+
 // ===================================
 // ÉTAPE 2 : CALCUL DU MONTANT APRÈS RÉDUCTION
 // ===================================
+
+montantApresReduction =
+  montantPanier - montantPanier * (reductionAppliquee / 100);
 
 // ===================================
 // ÉTAPE 3 : CALCUL DES FRAIS DE PORT
@@ -30,10 +41,17 @@ let totalFinal = 0; // Montant total final à payer
 // - 5€ si achat entre 20€ et 50€
 // - 8€ si achat < 20€
 
+if (montantApresReduction < 20) {
+  fraisDePort = 8;
+} else if (montantApresReduction <= 50) {
+  fraisDePort = 5;
+}
+
 // ===================================
 // ÉTAPE 4 : CALCUL DU TOTAL FINAL
 // ===================================
 //
+totalFinal = montantApresReduction + fraisDePort;
 
 // ===================================
 // AFFICHAGE DES RÉSULTATS
