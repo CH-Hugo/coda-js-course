@@ -3,81 +3,55 @@
 <head>
     <meta charset="UTF-8" />
     <title>Mon Pokédex</title>
-<<<<<<< HEAD
     <link rel="stylesheet" href="/src/style.css">
-  </head>
-  <body>
-  <div id="intro-screen">
-    <div class="intro-content">
-      <img src="src/assets/kuyrem.gif" class="kyurem-sprite">
-      <p class="blink">APPUYEZ SUR UNE TOUCHE</p>
-    </div>
-  </div>
-
-  <div id="game-world" class="hidden">
-    <div id="room">
-      <div id="pc-desk"></div> <div id="player" class="back"></div> </div>
-    
-    <div id="dialogue-box" class="hidden">
-      <div class="dialogue-inner">
-        <p id="dialogue-text"></p>
-        <span class="dialogue-arrow">▼</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="pokedex-app" class="hidden">
-    <div id="app">
-      <h1>Pokédex</h1>
-      
-      <div class="controls">
-        <input type="text" id="search-input" placeholder="Rechercher un Pokémon...">
-      </div>
-=======
-    <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-<div id="app">
-    <h1>Pokédex</h1>
->>>>>>> 421ca0876a493a7ed2a5ca368776f5ffbb172042
-
-    <div class="controls">
-        <label for="search-input">Rechercher un Pokémon :</label>
-        <input type="text" id="search-input" placeholder="Ex: Pikachu...">
-    </div>
-
-    <ul id="pokemon-list"></ul>
-
-    <div class="pagination-controls">
-        <button id="prev-page">Précédent</button>
-        <span id="page-info">Page 1</span>
-        <button id="next-page">Suivant</button>
-<<<<<<< HEAD
-      </div>
-    </div>
-
-  <div id="pokemon-modal" class="hidden">
-    <div class="modal-content">
-        <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
-        <div id="modal-body">
+    <div id="intro-screen">
+        <div class="intro-content">
+            <img src="src/assets/kuyrem.gif" class="kyurem-sprite">
+            <p class="blink">APPUYEZ SUR UNE TOUCHE</p>
         </div>
     </div>
-</div>
 
-  <script type="module" src="/src/main.ts"></script>
-=======
-    </div>
-</div>
-
-<div id="pokemon-modal" class="hidden">
-    <div class="modal-content">
-        <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
-        <div id="modal-body">
+    <div id="game-world" class="hidden">
+        <div id="room">
+            <div id="pc-desk"></div> 
+            <div id="player" class="back"></div> 
+        </div>
+        
+        <div id="dialogue-box" class="hidden">
+            <div class="dialogue-inner">
+                <p id="dialogue-text"></p>
+                <span class="dialogue-arrow">▼</span>
+            </div>
         </div>
     </div>
-</div>
 
-<script type="module" src="src/main.ts"></script>
->>>>>>> 421ca0876a493a7ed2a5ca368776f5ffbb172042
+    <div id="pokedex-app" class="hidden">
+        <div id="app">
+            <h1>Pokédex</h1>
+            
+            <div class="controls">
+                <input type="text" id="search-input" placeholder="Rechercher un Pokémon...">
+            </div>
+
+            <ul id="pokemon-list"></ul>
+
+            <div class="pagination-controls">
+                <button id="prev-page">Précédent</button>
+                <span id="page-info">Page 1</span>
+                <button id="next-page">Suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pokemon-modal" class="hidden">
+        <div class="modal-content">
+            <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
