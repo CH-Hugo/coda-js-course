@@ -1,44 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Mon Pokédex</title>
-    <link rel="stylesheet" href="/src/style.css">
-  </head>
-  <body>
-    <div id="app">
-      <h1>Pokédex</h1>
-      
-<div class="controls">
-  <label for="search-input">Rechercher un Pokémon :</label>
-  <input type="text" id="search-input" placeholder="Ex: Pikachu...">
-</div>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="app">
+    <h1>Pokédex</h1>
 
-      <ul id="pokemon-list"></ul>
+    <div class="controls">
+        <label for="search-input">Rechercher un Pokémon :</label>
+        <input type="text" id="search-input" placeholder="Ex: Pikachu...">
+    </div>
 
-      <div class="pagination-controls">
+    <ul id="pokemon-list"></ul>
+
+    <div class="pagination-controls">
         <button id="prev-page">Précédent</button>
         <span id="page-info">Page 1</span>
         <button id="next-page">Suivant</button>
-      </div>
-    </div>
-
-
-    <div id="pokemon-modal" class="hidden">
-      <div class="modal-content">
-        <button id="close-modal">X</button>
-        <div id="modal-body"></div>
-      </div>
-    </div>
-    
-    <div id="pokemon-modal" class="hidden">
-    <div class="modal-content">
-        <button id="close-modal">Fermer</button>
-        <div id="modal-body">
-            </div>
     </div>
 </div>
 
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<div id="pokemon-modal" class="hidden">
+    <div class="modal-content">
+        <button id="close-modal" aria-label="Fermer la fenêtre">Fermer</button>
+        <div id="modal-body">
+        </div>
+    </div>
+</div>
+
+<script type="module" src="src/main.ts"></script>
+</body>
 </html>
