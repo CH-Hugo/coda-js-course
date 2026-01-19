@@ -1,16 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');*
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
-.blink {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 16px; /* Conseil : utilise des multiples de 8 (8, 16, 24) pour que ce soit net */
-  color: #000000;
-  animation: fade 1.5s infinite;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-
+/* --- GLOBALS --- */
+:root {
+  --cgear-blue: #00d4ff;
+  --cgear-dark: #050b14;
+  --cgear-card: rgba(0, 212, 255, 0.05);
+  --border-glow: rgba(0, 212, 255, 0.3);
 }
-@keyframes fade { 50% { opacity: 0; } }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--cgear-dark);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+.hidden { display: none !important; }
+
+/* --- ECRAN 1 : INTRO --- */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
 .kyurem-sprite {
   height: 400px; 
@@ -19,24 +39,15 @@
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
 }
 
-/* --- GESTION DES SCENES --- */
-.hidden {
-  display: none !important;
+.blink {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
+  color: #000;
+  animation: fade 1.5s infinite;
 }
+@keyframes fade { 50% { opacity: 0; } }
 
-#intro-screen {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  color: white;
-  font-family: 'Courier New', monospace;
-}
-
-/* --- STYLE DU MONDE 2D --- */
+/* --- ECRAN 2 : LA CHAMBRE --- */
 #game-world {
   position: fixed;
   inset: 0;
@@ -48,62 +59,106 @@
 }
 
 #room {
-  width: 500px;
-  height: 400px;
-  background: #6080a0; /* Couleur sol BW2 */
-  border: 8px solid #333;
+  width: 443px;
+  height: 355px;
+  background-image: url('/src/assets/room.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
   position: relative;
-  image-rendering: pixelated;
-}
-
-#pc-desk {
-  width: 60px;
-  height: 40px;
-  background: #333; /* On mettra un sprite de PC après */
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-bottom: 4px solid #555;
+  image-rendering: pixelated; /* Garde les pixels bien nets au zoom */
+  border: 4px solid #333;
+  
+  /* AJOUTE CECI POUR ZOOMER */
+  transform: scale(2); 
 }
 
 #player {
-  width: 32px;
-  height: 32px;
-  background: #ff3e3e; /* Ton perso (carré rouge en attendant les sprites) */
+  width: 48px;  /* Ajusté selon ton sprite sheet */
+  height: 64px; /* Ajusté selon ton sprite sheet */
+  background-image: url('/src/assets/nate.png');
+  background-repeat: no-repeat;
+  background-size: 192px 256px; /* Taille totale de l'image si 4x4 frames */
+  background-position: 0 0; /* Nate de face par défaut */
   position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%) scale(2);
-  transition: all 0.1s linear;
+  z-index: 10;
+  image-rendering: pixelated;
+  background-color: transparent;
 }
 
-:root {
-  --cgear-blue: #00d4ff;
-  --cgear-dark: #050b14;
-  --cgear-card: rgba(0, 212, 255, 0.05);
-  --border-glow: rgba(0, 212, 255, 0.3);
+/* Positions pour changer de direction (Base) */
+#player.down  { background-position: 0 0; }
+#player.left  { background-position: 0 -64px; }
+#player.right { background-position: 0 -128px; }
+#player.up    { background-position: 0 -192px; }
+
+#pc-desk {
+  width: 70px;
+  height: 60px;
+  position: absolute;
+  top: 50px; 
+  left: 10px;
+  background: rgba(0, 212, 255, 0.1); /* Légère lueur pour le voir */
+  z-index: 5;
 }
 
-body {
-  margin: 0;
-  background-color: var(--cgear-dark);
-  /* Motif hexagonal subtil en fond */
-  background-image: 
-    radial-gradient(var(--cgear-card) 2px, transparent 2px);
+/* La bulle positionnée sous Nate */
+#player-bubble {
+    position: absolute;
+    top: 50px; /* Positionnée sous ses pieds (Nate fait environ 48px de haut) */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    color: #333;
+    padding: 5px 10px;
+    border: 2px solid #000;
+    border-radius: 5px; /* Coins légèrement arrondis mais nets */
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px; /* Très petit pour le style rétro */
+    line-height: 1.2;
+    white-space: nowrap;
+    z-index: 20;
+    box-shadow: 2px 2px 0px #888; /* Ombre nette style pixel */
+}
+
+/* Le petit triangle inversé (pointe vers le haut cette fois) */
+#player-bubble::after {
+    content: '';
+    position: absolute;
+    top: -8px; /* Pointe vers les pieds de Nate */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid #000;
+}
+
+/* Animation de flottement légère */
+@keyframes floatSmall {
+    0%, 100% { transform: translate(-50%, 0px); }
+    50% { transform: translate(-50%, 3px); }
+}
+
+#player-bubble {
+    animation: floatSmall 2s infinite ease-in-out;
+}
+
+/* --- ECRAN 3 : POKEDEX (L'APPLI) --- */
+#pokedex-app {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px;
+  z-index: 1; /* Derrière les écrans fixes si besoin */
+  background-image: radial-gradient(var(--cgear-card) 2px, transparent 2px);
   background-size: 30px 30px;
-  color: white;
-  font-family: 'Orbitron', 'Segoe UI', sans-serif; /* Une police techno si possible */
 }
 
 #app {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 h1 {
-  text-align: left;
+  font-family: 'Orbitron', sans-serif;
   font-size: 3rem;
   text-transform: uppercase;
   letter-spacing: 5px;
@@ -114,7 +169,6 @@ h1 {
   filter: drop-shadow(0 0 10px var(--cgear-blue));
 }
 
-/* Barre de recherche "Terminal" */
 #search-input {
   width: 100%;
   max-width: 500px;
@@ -122,13 +176,12 @@ h1 {
   border: 2px solid var(--cgear-blue);
   padding: 15px 25px;
   color: var(--cgear-blue);
-  font-size: 1.1rem;
+  font-family: 'Orbitron', sans-serif;
   clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
   outline: none;
   margin-bottom: 40px;
 }
 
-/* Grille de cartes */
 #pokemon-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -141,46 +194,33 @@ h1 {
   background: var(--cgear-card);
   border: 1px solid var(--border-glow);
   padding: 20px;
-  position: relative;
-  /* Coins biseautés style C-Gear */
-  clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-  transition: all 0.3s ease;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.pokemon-item::before {
-  content: "LINK ESTABLISHED";
-  position: absolute;
-  top: 5px;
-  right: 20px;
-  font-size: 0.6rem;
-  color: var(--cgear-blue);
-  opacity: 0.5;
+  clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+  transition: all 0.3s ease;
 }
 
 .pokemon-item:hover {
   background: rgba(0, 212, 255, 0.15);
   transform: translateY(-5px);
-  box-shadow: 0 0 20px var(--border-glow);
   border-color: var(--cgear-blue);
 }
 
 .pokemon-item img {
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
   filter: drop-shadow(0 0 5px var(--cgear-blue));
 }
 
 .pokemon-item span {
   margin-top: 15px;
   font-weight: bold;
-  color: white;
   letter-spacing: 1px;
 }
 
-/* Pagination style Console */
+/* --- PAGINATION --- */
 .pagination-controls {
   margin-top: 50px;
   display: flex;
@@ -197,113 +237,41 @@ button {
   font-weight: bold;
   cursor: pointer;
   text-transform: uppercase;
-  transition: 0.3s;
 }
 
-button:hover:not(:disabled) {
+button:disabled { border-color: #333; color: #333; cursor: not-allowed; }
+
+/* --- MODAL --- */
+#pokemon-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: var(--cgear-dark);
+  border: 3px solid var(--cgear-blue);
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
+  box-shadow: 0 0 30px var(--cgear-blue);
+}
+
+#close-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
   background: var(--cgear-blue);
   color: black;
-}
-
-.pokemon-item {
-    cursor: pointer;
-}
-
-.hidden {
-    display: none !important;
-}
-
-#pokemon-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-
-.modal-content {
-    background: var(--cgear-dark);
-    border: 3px solid var(--cgear-blue);
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
-    box-shadow: 0 0 30px var(--cgear-blue);
-    text-align: center;
-}
-
-#close-modal {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--cgear-blue);
-    color: black;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-    font-family: inherit;
-    font-weight: bold;
-}
-
-button:disabled {
-  border-color: #333;
-  color: #333;
-}
-
-/* Flo */
-
-.pokemon-item {
-    cursor: pointer;
-}
-
-.hidden {
-    display: none !important;
-}
-
-#pokemon-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-
-.modal-content {
-    background: var(--cgear-dark);
-    border: 3px solid var(--cgear-blue);
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
-    box-shadow: 0 0 30px var(--cgear-blue);
-    text-align: center;
-}
-
-#close-modal {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--cgear-blue);
-    color: black;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-    font-family: inherit;
-    font-weight: bold;
+  border: none;
+  padding: 5px 15px;
+  font-weight: bold;
+  cursor: pointer;
 }
