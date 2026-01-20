@@ -27,14 +27,17 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
     if (!listElement) return;
     listElement.innerHTML = '';
 
-    await Promise.all(pokemonsToDisplay.map(async (pokemon) => {
+    // Chargement des données en parallèle
+    const pokemonCards = await Promise.all(pokemonsToDisplay.map(async (pokemon) => {
         const urlParts = pokemon.url.split('/');
-        const pokemonId = urlParts[urlParts.length - 2];
+        const pokemonId = parseInt(urlParts[urlParts.length - 2]);
+
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
         const data = await response.json();
 
         const li = document.createElement('li');
         li.classList.add('pokemon-item');
+
         const img = document.createElement('img');
         img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
         li.appendChild(img);
@@ -53,9 +56,17 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
             typesContainer.appendChild(typeSpan);
         });
         li.appendChild(typesContainer);
-        li.addEventListener('click', () => showPokemonDetail(pokemonId));
-        listElement.appendChild(li);
+
+        li.addEventListener('click', () => showPokemonDetail(pokemonId.toString()));
+
+        return { id: pokemonId, element: li };
     }));
+
+    pokemonCards.sort((a, b) => a.id - b.id);
+
+    pokemonCards.forEach(card => {
+        listElement.appendChild(card.element);
+    });
 }
 
 export async function showPokemonDetail(id: string) {
@@ -65,7 +76,11 @@ export async function showPokemonDetail(id: string) {
         startSound.play().catch(() => {});
 
         const cryUrl = data.cries?.latest || data.cries?.legacy;
-        const typesHTML = data.types.map((t: any) => `<span class="type-badge ${t.type.name}">${t.type.name.toUpperCase()}</span>`).join('');
+
+        const typesHTML = data.types.map((t: any) => `
+            <span class="type-badge ${t.type.name}">${t.type.name.toUpperCase()}</span>
+        `).join('');
+
         const statsHTML = data.stats.map((s: any) => `
             <div class="stat-line">
                 <span class="stat-name">${s.stat.name.toUpperCase()}</span>
@@ -76,22 +91,32 @@ export async function showPokemonDetail(id: string) {
         if (modalBody) {
             modalBody.innerHTML = `
                 <div class="modal-detail">
-                    <div class="image-container"><img id="pokemon-artwork" src="${data.sprites.other['official-artwork'].front_default}"></div>
-                    <div class="header-detail"><h2>${data.name.toUpperCase()}</h2>
-                    ${cryUrl ? `<button class="cry-button" id="btn-cry">🔊 CRI</button>` : ''}</div>
+                    <div class="image-container">
+                        <img id="pokemon-artwork" src="${data.sprites.other['official-artwork'].front_default}">
+                    </div>
+                    <div class="header-detail">
+                        <h2>${data.name.toUpperCase()}</h2>
+                        ${cryUrl ? `<button class="cry-button" id="btn-cry">🔊 CRI</button>` : ''}
+                    </div>
                     <div class="info-grid">
                         <div class="physique">
                             <p><strong>N° :</strong> ${data.id}</p>
                             <p><strong>Taille :</strong> ${data.height / 10} m</p>
                             <p><strong>Poids :</strong> ${data.weight / 10} kg</p>
-                            <div class="types-container">${typesHTML}</div>
+                            <div class="detail-types">
+                                <strong>Types :</strong>
+                                <div class="types-container">${typesHTML}</div>
+                            </div>
                         </div>
                         <div class="stats-section">${statsHTML}</div>
                     </div>
                 </div>`;
+
             if (cryUrl) {
                 document.getElementById('btn-cry')?.addEventListener('click', () => {
-                    new Audio(cryUrl).play();
+                    const audio = new Audio(cryUrl);
+                    audio.volume = 0.4;
+                    audio.play();
                     const img = document.getElementById('pokemon-artwork');
                     img?.classList.add('bounce-animation');
                     setTimeout(() => img?.classList.remove('bounce-animation'), 500);
