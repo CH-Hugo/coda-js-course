@@ -171,7 +171,7 @@ body {
 .pikachu {
     position: absolute;
     bottom: 180px; 
-    left: 220px;   
+    left: 220px;
     width: 55px;    
     image-rendering: pixelated; 
     z-index: 10;    
@@ -361,4 +361,139 @@ button:disabled { border-color: #333; color: #333; cursor: not-allowed; }
     width: 30px;
     font-weight: bold;
     text-align: right;
+}
+
+/*Style carte et type*/
+
+/* Style de la carte (ajustement) */
+.pokemon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.pokemon-name-label {
+    font-weight: bold;
+    margin: 8px 0;
+    font-size: 0.9em;
+}
+
+/* Conteneur des types */
+.types-container {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+/* Style de base des badges */
+.type-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Couleurs par type */
+.grass    { background-color: #78C850; }
+.fire     { background-color: #F08030; }
+.water    { background-color: #6890F0; }
+.electric { background-color: #F8D030; color: #333; text-shadow: none; } /* Jaune plus lisible sans texte blanc */
+.bug      { background-color: #A8B820; }
+.poison   { background-color: #A040A0; }
+.flying   { background-color: #A890F0; }
+.normal   { background-color: #A8A878; }
+.ground   { background-color: #E0C068; }
+.fairy    { background-color: #EE99AC; }
+.fighting { background-color: #C03028; }
+.psychic  { background-color: #F85888; }
+.rock     { background-color: #B8A038; }
+.steel    { background-color: #B8B8D0; }
+.ice      { background-color: #98D8D8; }
+.ghost    { background-color: #705898; }
+.dragon   { background-color: #7038F8; }
+.dark     { background-color: #705848; }
+
+/*Fiche détail et type*/
+
+/* Aligner les badges proprement dans la fiche détail */
+.detail-types {
+    margin-top: 10px;
+}
+
+.detail-types .types-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+    justify-content: flex-start; /* Aligné à gauche dans le détail, contrairement à la liste */
+}
+
+/* On agrandit un peu les badges pour la vue détail si on veut */
+.modal-detail .type-badge {
+    padding: 5px 12px;
+    font-size: 0.85em;
+}
+
+/* Container de l'image pour l'animation */
+.image-container {
+    text-align: center;
+    perspective: 1000px;
+}
+
+#pokemon-artwork {
+    width: 200px;
+    height: 200px;
+    transition: transform 0.2s;
+}
+
+/* Animation de saut */
+.bounce-animation {
+    animation: pokemon-jump 0.5s ease;
+}
+
+@keyframes pokemon-jump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* Header avec Nom + Bouton */
+.header-detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 15px 0;
+}
+
+/* Style du bouton de cri */
+.cry-button {
+    background: #ff1f1f;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b30000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8em;
+}
+
+.cry-button:hover {
+    background: #ff4d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #b30000;
+}
+
+.cry-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #b30000;
 }
