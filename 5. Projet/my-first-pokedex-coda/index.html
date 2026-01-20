@@ -11,14 +11,17 @@
             <img src="src/assets/kuyrem.gif" class="kyurem-sprite">
             <p class="blink">APPUYEZ SUR UNE TOUCHE</p>
         </div>
+        <div class="copyright-info">
+    <p>©2026 Pokémon. ©1995-2026 Nintendo/Hugo et Florian Inc./GAME FREAK inc.</p>
+        </div>
     </div>
 
     <div id="game-world" class="hidden">
         <div id="room">
             <div id="pc-desk"></div> 
-            
+            <img src="src/assets/pikachu.gif" class="pikachu" alt="Pikachu">
             <div id="player" class="back">
-                <div id="player-bubble">Utilise le PC pour le Pokédex !</div>
+                <div id="player-bubble">Réveille-toi, l'aventure commence ! <br> Utilise le PC pour le Pokédex.</div>
             </div> 
         </div>
         
@@ -30,8 +33,13 @@
         </div>
     </div>
 
+<div id="ma-bulle-dialogue" class="hidden">
+    Appuyez sur ENTRÉE pour interagir
+</div>
+
     <div id="pokedex-app" class="hidden">
         <div id="app">
+          <button id="back-to-room" class="pixel-button">RETOUR</button>
             <h1>Pokédex</h1>
             
             <div class="controls">
@@ -54,7 +62,6 @@
             <div id="modal-body"></div>
         </div>
     </div>
-
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

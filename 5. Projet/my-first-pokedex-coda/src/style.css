@@ -30,13 +30,33 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  border-top: 40px solid #222;
+  border-bottom: 40px solid #222;
+}
+
+#intro-screen::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    z-index: 2;
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
 }
 
 .kyurem-sprite {
   height: 400px; 
   image-rendering: pixelated; 
   margin: -50px 0 20px 0; 
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { filter: drop-shadow(0 0 5px white); }
+    to { filter: drop-shadow(0 0 20px #70d1f4); }
 }
 
 .blink {
@@ -46,6 +66,16 @@ body {
   animation: fade 1.5s infinite;
 }
 @keyframes fade { 50% { opacity: 0; } }
+
+.copyright-info {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px; 
+    color: rgb(0, 0, 0);
+}
 
 /* --- ECRAN 2 : LA CHAMBRE --- */
 #game-world {
@@ -59,87 +89,92 @@ body {
 }
 
 #room {
-  width: 443px;
-  height: 355px;
+  width: 400px;
+  height: 340px;
   background-image: url('/src/assets/room.jpg');
   background-size: contain;
   background-repeat: no-repeat;
   position: relative;
-  image-rendering: pixelated; /* Garde les pixels bien nets au zoom */
-  border: 4px solid #333;
-  
-  /* AJOUTE CECI POUR ZOOMER */
-  transform: scale(2); 
+  border: 4px solid #000000;
+  transform: scale(2);
 }
 
 #player {
-  width: 48px;  /* Ajusté selon ton sprite sheet */
-  height: 64px; /* Ajusté selon ton sprite sheet */
+  width: 48px;  
+  height: 64px; 
   background-image: url('/src/assets/nate.png');
   background-repeat: no-repeat;
-  background-size: 192px 256px; /* Taille totale de l'image si 4x4 frames */
-  background-position: 0 0; /* Nate de face par défaut */
+  background-size: 192px 256px; 
+  background-position: 0 0; 
   position: absolute;
   z-index: 10;
   image-rendering: pixelated;
   background-color: transparent;
 }
 
-/* Positions pour changer de direction (Base) */
 #player.down  { background-position: 0 0; }
 #player.left  { background-position: 0 -64px; }
 #player.right { background-position: 0 -128px; }
 #player.up    { background-position: 0 -192px; }
 
 #pc-desk {
-  width: 70px;
+  width: 50px;
   height: 60px;
   position: absolute;
-  top: 50px; 
-  left: 10px;
-  background: rgba(0, 212, 255, 0.1); /* Légère lueur pour le voir */
+  top: 60px; 
+  left: 1px;
+  background: rgba(255, 0, 0, 0); 
   z-index: 5;
 }
 
-/* La bulle positionnée sous Nate */
 #player-bubble {
     position: absolute;
-    top: 50px; /* Positionnée sous ses pieds (Nate fait environ 48px de haut) */
+    top: 50px; 
     left: 50%;
     transform: translateX(-50%);
     background: #ffffff;
     color: #333;
     padding: 5px 10px;
-    border: 2px solid #000;
-    border-radius: 5px; /* Coins légèrement arrondis mais nets */
+    border: 2px solid #4a4a4a;
+    border-radius: 5px; 
     font-family: 'Press Start 2P', cursive;
-    font-size: 8px; /* Très petit pour le style rétro */
+    font-size: 8px; 
     line-height: 1.2;
     white-space: nowrap;
     z-index: 20;
-    box-shadow: 2px 2px 0px #888; /* Ombre nette style pixel */
+    animation: floatSmall 2s infinite ease-in-out;
 }
 
-/* Le petit triangle inversé (pointe vers le haut cette fois) */
-#player-bubble::after {
-    content: '';
-    position: absolute;
-    top: -8px; /* Pointe vers les pieds de Nate */
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 8px solid #000;
-}
-
-/* Animation de flottement légère */
 @keyframes floatSmall {
     0%, 100% { transform: translate(-50%, 0px); }
     50% { transform: translate(-50%, 3px); }
 }
 
-#player-bubble {
-    animation: floatSmall 2s infinite ease-in-out;
+#ma-bulle-dialogue {
+    position: fixed; 
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px; 
+    min-height: 80px;
+    background-color: rgb(255, 255, 255);
+    border: 4px solid #4a4a4a;
+    border-radius: 12px;
+    padding: 20px;
+    z-index: 9999; 
+    font-family: 'Press Start 2P', cursive;
+    display: block; 
+    color: #000;
+}
+
+.pikachu {
+    position: absolute;
+    bottom: 180px; 
+    left: 220px;   
+    width: 55px;    
+    image-rendering: pixelated; 
+    z-index: 10;    
 }
 
 /* --- ECRAN 3 : POKEDEX (L'APPLI) --- */
@@ -147,9 +182,19 @@ body {
   position: relative;
   min-height: 100vh;
   padding: 40px;
-  z-index: 1; /* Derrière les écrans fixes si besoin */
+  z-index: 1; 
   background-image: radial-gradient(var(--cgear-card) 2px, transparent 2px);
   background-size: 30px 30px;
+}
+
+.pixel-button {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #f0f0f0;
+    border: 4px solid #4a4a4a;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.1s;
 }
 
 #app {
@@ -241,7 +286,7 @@ button {
 
 button:disabled { border-color: #333; color: #333; cursor: not-allowed; }
 
-/* --- MODAL --- */
+/* --- MODAL & STATS (Compilé avec le code du collègue) --- */
 #pokemon-modal {
   position: fixed;
   inset: 0;
@@ -274,4 +319,46 @@ button:disabled { border-color: #333; color: #333; cursor: not-allowed; }
   padding: 5px 15px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.stat-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-name {
+    width: 60px;
+    font-size: 0.7rem;
+    color: var(--cgear-blue);
+}
+
+.stat-bar-bg {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.1);
+    height: 10px;
+    margin: 0 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    background: var(--cgear-blue);
+    box-shadow: 0 0 10px var(--cgear-blue);
+    transition: width 0.8s ease-in-out;
+}
+
+.stat-value {
+    width: 30px;
+    font-weight: bold;
+    text-align: right;
 }

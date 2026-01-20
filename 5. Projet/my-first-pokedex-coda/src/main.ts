@@ -27,28 +27,30 @@ let filteredPokemons: Pokemon[] = [];
 let currentPage = 0;
 const itemsPerPage = 25;
 let gameStarted = false;
+let canInteractWithPC = false;
 
 // Position et Animation du joueur
-let playerX = 200; // Aligné au centre de la chambre
+let playerX = 200; 
 let playerY = 200; 
-const step = 8;    // Pas plus petit pour plus de fluidité
-let walkFrame = 0; // Pour alterner les jambes du sprite
+const step = 8;    
+let walkFrame = 0; 
 
 // 4. SON ET INTRO
 const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
-const roomMusic = new Audio('/src/assets/theme.mp3'); 
+const roomMusic = new Audio('/src/assets/theme.mp3');
+const pokedexMusic = new Audio('/src/assets/pokedex.mp3'); 
 
 startSound.preload = 'auto';
 roomMusic.loop = true; 
-roomMusic.volume = 0.4; 
+roomMusic.volume = 0.4;
+pokedexMusic.loop = true; 
+pokedexMusic.volume = 0.4;
 
 // Gestionnaire global des touches
 window.addEventListener('keydown', (e) => {
-    // Phase 1 : Quitter l'intro
     if (!gameStarted) {
         startSound.currentTime = 0;
         startSound.play().catch(err => console.log("Erreur son:", err));
-
         roomMusic.play().catch(err => console.log("Musique bloquée:", err));
 
         const introScreen = document.getElementById('intro-screen');
@@ -58,29 +60,42 @@ window.addEventListener('keydown', (e) => {
         }
         gameStarted = true;
         updatePlayerPosition();
-        return;
+        return; 
     }
 
-    // Phase 2 : Déplacement dans la chambre
+    if (!gameWorld.classList.contains('hidden') && canInteractWithPC) {
+        if (e.key === 'Enter') {
+            roomMusic.pause();
+            gameWorld.classList.add('hidden'); 
+            pokedexApp.classList.remove('hidden'); 
+            startSound.currentTime = 0;
+            startSound.play().catch(err => console.log("Erreur son:", err));
+            pokedexMusic.play().catch(err => console.log("Erreur son:", err));
+            
+            const bulle = document.getElementById('ma-bulle-dialogue');
+            if (bulle) bulle.classList.add('hidden');
+            
+            return; 
+        }
+    }
+
     if (!gameWorld.classList.contains('hidden')) {
         movePlayer(e.key);
     }
 });
 
-    // ... la suite de ton code de mouvement
 // 5. LOGIQUE DE JEU (Mouvement & Collision)
 function movePlayer(key: string) {
     if (!player) return;
 
     const bubble = document.getElementById('player-bubble');
     if (bubble) {
-        bubble.style.display = 'none'; // Ou bubble.remove()
+        bubble.style.display = 'none'; 
     }
 
     let nextX = playerX;
     let nextY = playerY;
 
-    // Calcul de l'animation de marche
     walkFrame = (walkFrame + 1) % 4;
     const posX = -(walkFrame * 48);
 
@@ -98,7 +113,6 @@ function movePlayer(key: string) {
         player.style.backgroundPosition = `${posX}px -128px`;
     }
 
-    // VÉRIFICATION DES COLLISIONS MURS ET MEUBLES
     if (canMoveTo(nextX, nextY)) {
         playerX = nextX;
         playerY = nextY;
@@ -108,18 +122,10 @@ function movePlayer(key: string) {
 }
 
 function canMoveTo(x: number, y: number): boolean {
-    // 1. Murs extérieurs
-    if (x < 10 || x > 400 || y < 50 || y > 300) return false;
-
-    // 2. Collision avec le LIT (en bas à droite)
-    if (x > 330 && y > 210) return false;
-
-    // 3. Collision avec la TV et les MEUBLES DU HAUT
+    if (x < 0 || x > 350 || y < 40 || y > 270) return false;
+    if (x > 260 && y > 170) return false;
     if (y < 115 && x > 70) return false;
-
-    // 4. Collision avec la PLANTE (en bas à gauche)
-    if (x < 50 && y > 260) return false;
-
+    if (x < 45 && y > 190) return false;
     return true; 
 }
 
@@ -131,21 +137,31 @@ function updatePlayerPosition() {
 }
 
 function checkCollision() {
-    // Zone du PC AFFINÉE (juste devant le bureau bleu)
     const pcRect = { x: 15, y: 65, width: 40, height: 40 };
+    const bulleElement = document.getElementById('ma-bulle-dialogue');
 
-    if (playerX < pcRect.x + pcRect.width &&
+    const isTouchingPC = (
+        playerX < pcRect.x + pcRect.width &&
         playerX + 32 > pcRect.x &&
         playerY < pcRect.y + pcRect.height &&
-        playerY + 32 > pcRect.y) {
-        
-        roomMusic.pause();
-        gameWorld.classList.add('hidden');
-        pokedexApp.classList.remove('hidden');
+        playerY + 32 > pcRect.y
+    );
+
+    if (isTouchingPC) {
+        if (bulleElement) {
+            bulleElement.innerHTML = "Veux-tu ouvrir le Pokédex ? <br> (Appuie sur ENTRÉE)";
+            bulleElement.classList.remove('hidden');
+        }
+        canInteractWithPC = true;
+    } else {
+        if (bulleElement) {
+            bulleElement.classList.add('hidden');
+        }
+        canInteractWithPC = false;
     }
 }
 
-// 6. FONCTIONS API ET DÉTAILS
+// 6. FONCTIONS API ET DÉTAILS (VERSION COLLÈGUE)
 async function fetchAllPokemons() {
     try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
@@ -163,20 +179,40 @@ async function showPokemonDetail(id: string) {
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
         const data = await response.json();
+        startSound.play().catch(err => console.log("Erreur son:", err));
+
+        // Génération des stats avec barres de remplissage (Code collègue)
+        const statsHTML = data.stats.map((s: any) => `
+            <div class="stat-line">
+                <span class="stat-name">${s.stat.name.toUpperCase()}</span>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar-fill" style="width: ${Math.min(s.base_stat, 100)}%"></div>
+                </div>
+                <span class="stat-value">${s.base_stat}</span>
+            </div>
+        `).join('');
 
         if (modalBody) {
             modalBody.innerHTML = `
                 <div class="modal-detail">
                     <img src="${data.sprites.other['official-artwork'].front_default}" alt="${data.name}">
                     <h2>${data.name.toUpperCase()}</h2>
-                    <div class="stats-container">
-                        <p><strong>N° :</strong> ${data.id}</p>
-                        <p><strong>Taille :</strong> ${data.height / 10} m</p>
-                        <p><strong>Poids :</strong> ${data.weight / 10} kg</p>
-                        <p><strong>Types :</strong> ${data.types.map((t: any) => t.type.name).join(', ')}</p>
+                    
+                    <div class="info-grid">
+                        <div class="physique">
+                            <p><strong>N° :</strong> ${data.id}</p>
+                            <p><strong>Taille :</strong> ${data.height / 10} m</p>
+                            <p><strong>Poids :</strong> ${data.weight / 10} kg</p>
+                            <p><strong>Types :</strong> ${data.types.map((t: any) => t.type.name).join(', ')}</p>
+                        </div>
+                        
+                        <div class="stats-section">
+                            ${statsHTML}
+                        </div>
                     </div>
                 </div>`;
         }
+
         modal?.classList.remove('hidden');
     } catch (error) {
         console.error("Erreur détails :", error);
@@ -232,6 +268,18 @@ searchInput?.addEventListener('input', () => {
 nextBtn?.addEventListener('click', () => { currentPage++; updateDisplay(); window.scrollTo(0, 0); });
 prevBtn?.addEventListener('click', () => { if (currentPage > 0) { currentPage--; updateDisplay(); window.scrollTo(0, 0); } });
 closeModalBtn?.addEventListener('click', () => modal?.classList.add('hidden'));
+
+const backBtn = document.getElementById('back-to-room') as HTMLButtonElement;
+backBtn?.addEventListener('click', () => {
+    startSound.play().catch(err => console.log("Erreur son:", err));
+    pokedexApp.classList.add('hidden');
+    pokedexMusic.pause();
+    gameWorld.classList.remove('hidden');
+    roomMusic.play().catch(err => console.log("Musique bloquée :", err));
+    canInteractWithPC = false;
+    playerY += 10;
+    updatePlayerPosition();
+});
 
 // 9. LANCEMENT
 fetchAllPokemons().catch(err => console.error("Initialisation échouée", err));
