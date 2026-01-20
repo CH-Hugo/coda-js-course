@@ -91,7 +91,7 @@ body {
 #room {
   width: 400px;
   height: 340px;
-  background-image: url('/src/assets/room.jpg');
+  background-image: url('assets/room.jpg');
   background-size: contain;
   background-repeat: no-repeat;
   position: relative;
@@ -102,7 +102,7 @@ body {
 #player {
   width: 48px;  
   height: 64px; 
-  background-image: url('/src/assets/nate.png');
+  background-image: url('assets/nate.png');
   background-repeat: no-repeat;
   background-size: 192px 256px; 
   background-position: 0 0; 
