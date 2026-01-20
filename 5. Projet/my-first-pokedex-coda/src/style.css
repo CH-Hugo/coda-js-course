@@ -20,6 +20,31 @@ body {
 
 .hidden { display: none !important; }
 
+#screen-wiper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    pointer-events: none;
+    
+    /* On crée un "trou" transparent au milieu d'un fond noir */
+    background: radial-gradient(circle, transparent 0%, black 100%);
+    
+    /* On agrandit le fond pour que le "trou" soit géant au début */
+    background-size: 400% 400%;
+    background-position: center;
+    
+    /* On cache le rideau par défaut avec l'opacité */
+    opacity: 0;
+    transition: opacity 0.2s, background-size 0.7s steps(15);
+}
+
+#screen-wiper.clore {
+    opacity: 1;
+    background-size: 0% 0%; /* Le trou devient minuscule */
+}
 /* --- ECRAN 1 : INTRO --- */
 #intro-screen {
   position: fixed;
