@@ -8,7 +8,9 @@ import {
     setFilteredPokemons, 
     currentPage, 
     setCurrentPage, 
-    loadTeam
+    loadTeam,
+    setActiveTeamId, // Ajouté pour changer d'équipe
+    activeTeamId     // Ajouté pour le style visuel
 } from './state';
 import { movePlayer, updatePlayerPosition } from './gameLogic';
 import { fetchAllPokemons, updateDisplay, updateTeamUI } from './pokedex';
@@ -102,25 +104,45 @@ document.getElementById('back-to-room')?.addEventListener('click', () => {
         startSound.play().catch(() => {});
         
         // Repositionne pour éviter de boucler sur le dialogue
-        // On garde son X (200) et on le descend un peu (Y + 20)
         setPlayerPos(200, playerY + 20);
         updatePlayerPosition();
     });
 });
 
+// --- GESTION DU TEAM PANEL (3 ÉQUIPES) ---
+
 // Ouvrir le panneau (Clic sur la Pokéball/Texte Équipe)
 document.getElementById('open-team')?.addEventListener('click', () => {
     const teamPanel = document.getElementById('team-panel');
-    teamPanel?.classList.remove('hidden'); // Affiche le panneau
-    updateTeamUI(); // Force la mise à jour visuelle des membres et de l'analyse
+    teamPanel?.classList.remove('hidden'); 
+    updateTeamUI(); 
 });
 
-// Fermer le panneau (Bouton RETOUR du panneau latéral)
+// Fermer le panneau
 document.getElementById('close-team')?.addEventListener('click', () => {
     document.getElementById('team-panel')?.classList.add('hidden');
+});
+
+/** * NOUVEAU : Gestion des onglets pour les 3 équipes 
+ * Dans ton HTML, ajoute 3 boutons avec la classe "team-tab" et l'id "tab-1", "tab-2", etc.
+ */
+[1, 2, 3].forEach(id => {
+    const tab = document.getElementById(`tab-${id}`);
+    tab?.addEventListener('click', () => {
+        // 1. Changer l'équipe active dans l'état
+        setActiveTeamId(id);
+        
+        // 2. Mettre à jour le style visuel des onglets
+        document.querySelectorAll('.team-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // 3. Rafraîchir l'interface
+        updateTeamUI();
+        startSound.play().catch(() => {});
+    });
 });
 
 // --- LANCEMENT INITIAL ---
 loadTeam();
 fetchAllPokemons();
-updateTeamUI(); // Initialise l'affichage au chargement
+updateTeamUI();

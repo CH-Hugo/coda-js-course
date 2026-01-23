@@ -68,20 +68,26 @@
         </div>
     </div>
 
-    <div id="team-panel" class="hidden">
-        <div class="team-header">
-            <button id="close-team" class="pixel-button">RETOUR</button>
-            <h2>VOTRE ÉQUIPE</h2>
-        </div>
-        
-        <div id="team-list">
-            </div>
-
-        <div id="team-analysis">
-            <h3>Analyse de l'équipe</h3>
-            <p>Votre équipe est vide.</p>
-        </div>
+<div id="team-panel" class="hidden">
+    <div class="team-header">
+        <button id="close-team" class="pixel-button">RETOUR</button>
+        <h2>VOTRE ÉQUIPE</h2>
     </div>
+
+    <div class="team-tabs-container">
+        <button id="tab-1" class="team-tab active">ÉQUIPE 1</button>
+        <button id="tab-2" class="team-tab">ÉQUIPE 2</button>
+        <button id="tab-3" class="team-tab">ÉQUIPE 3</button>
+    </div>
+    
+    <div id="team-list">
+        </div>
+
+    <div id="team-analysis">
+        <h3>Analyse de l'équipe</h3>
+        <p>Votre équipe est vide.</p>
+    </div>
+</div>
 
     <div id="pokemon-modal" class="hidden">
         <div class="modal-overlay"></div>
@@ -95,3 +101,4 @@
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
+

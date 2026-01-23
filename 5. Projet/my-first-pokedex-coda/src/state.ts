@@ -10,56 +10,66 @@ export const itemsPerPage = 25;
 export let gameStarted = false;
 export let canInteractWithPC = false;
 
-// Position du Joueur (Hugo)
+// Position du Joueur
 export let playerX = 200; 
 export let playerY = 200; 
 export const step = 8;     
 export let walkFrame = 0; 
 
 /** --- SETTERS --- **/
-
 export const setGameStarted = (v: boolean) => { gameStarted = v; };
 export const setCanInteract = (v: boolean) => { canInteractWithPC = v; };
 export const setPlayerPos = (x: number, y: number) => { playerX = x; playerY = y; };
 export const setWalkFrame = (f: number) => { walkFrame = f; };
 export const setCurrentPage = (p: number) => { currentPage = p; };
-
 export const setAllPokemons = (data: Pokemon[]) => { 
     allPokemons = data; 
     filteredPokemons = [...data]; 
 };
+export const setFilteredPokemons = (data: Pokemon[]) => { filteredPokemons = data; };
 
-export const setFilteredPokemons = (data: Pokemon[]) => { 
-    filteredPokemons = data; 
+/** --- GESTION DES 3 ÉQUIPES --- **/
+
+// On stocke les 3 équipes dans un seul objet
+export let teams: { [key: number]: any[] } = {
+    1: [],
+    2: [],
+    3: []
 };
 
-/** --- GESTION DE L'ÉQUIPE (TEAM) --- **/
+// On garde une trace de l'équipe actuellement affichée (1, 2 ou 3)
+export let activeTeamId = 1;
 
-// On utilise any[] pour accepter les données complètes de l'API (types, sprites, stats)
-export let playerTeam: any[] = [];
+export const setActiveTeamId = (id: number) => {
+    if (id >= 1 && id <= 3) activeTeamId = id;
+};
+
+// Helper pour récupérer l'équipe active plus facilement
+export const getActiveTeam = () => teams[activeTeamId];
 
 export const setPlayerTeam = (newTeam: any[]) => {
-    // On vide le tableau actuel et on injecte la nouvelle équipe
-    playerTeam.length = 0;
-    playerTeam.push(...newTeam);
+    teams[activeTeamId] = [...newTeam];
 };
 
-// Sauvegarde l'équipe dans le stockage local du navigateur
+// Sauvegarde globale des 3 équipes
 export function saveTeam() {
-    localStorage.setItem('pokemonTeam', JSON.stringify(playerTeam));
+    localStorage.setItem('pokemonTeams', JSON.stringify(teams));
+    localStorage.setItem('activeTeamId', activeTeamId.toString());
 }
 
-// Charge l'équipe au démarrage du jeu
+// Charge tout au démarrage
 export function loadTeam() {
-    const saved = localStorage.getItem('pokemonTeam');
-    if (saved) {
+    const savedTeams = localStorage.getItem('pokemonTeams');
+    const savedActiveId = localStorage.getItem('activeTeamId');
+
+    if (savedTeams) {
         try {
-            const team = JSON.parse(saved);
-            playerTeam.length = 0; 
-            playerTeam.push(...team);
-            console.log("Équipe chargée avec succès :", playerTeam);
+            teams = JSON.parse(savedTeams);
         } catch (e) {
-            console.error("Erreur lors du chargement de l'équipe :", e);
+            console.error("Erreur chargement équipes:", e);
         }
+    }
+    if (savedActiveId) {
+        activeTeamId = parseInt(savedActiveId);
     }
 }

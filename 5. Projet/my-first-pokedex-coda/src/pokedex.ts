@@ -4,7 +4,8 @@ import {
     currentPage, 
     itemsPerPage, 
     setAllPokemons, 
-    playerTeam, 
+    getActiveTeam, // Remplace playerTeam pour la lecture
+    activeTeamId,  // Pour savoir quelle équipe on modifie
     saveTeam, 
     setPlayerTeam 
 } from './state';
@@ -111,7 +112,7 @@ export async function showPokemonDetail(id: string) {
                         </div>
                         <div class="screen-footer">
                             <h2 class="pokedex-name">${data.name.toUpperCase()}</h2>
-                            <button class="add-team-btn" id="btn-add-team">AJOUTER À L'ÉQUIPE</button>
+                            <button class="add-team-btn" id="btn-add-team">AJOUTER À L'ÉQUIPE ${activeTeamId}</button>
                         </div>
                     </div>
                     <div class="dpad">
@@ -161,20 +162,23 @@ export async function showPokemonDetail(id: string) {
                 });
             }
 
-            // Gestion de l'ajout à l'équipe
+            // Gestion de l'ajout à l'équipe (Équipe Active)
             document.getElementById('btn-add-team')?.addEventListener('click', () => {
-                if (playerTeam.length >= 6) {
-                    alert("Équipe complète (6 max) !");
+                const currentTeam = getActiveTeam(); // Récupère l'équipe 1, 2 ou 3 selon la sélection
+                
+                if (currentTeam.length >= 6) {
+                    alert(`Équipe ${activeTeamId} complète (6 max) !`);
                     return;
                 }
-                if (playerTeam.some(p => p.id === data.id)) {
-                    alert("Ce Pokémon est déjà dans l'équipe !");
+                if (currentTeam.some((p: any) => p.id === data.id)) {
+                    alert("Ce Pokémon est déjà dans cette équipe !");
                     return;
                 }
-                playerTeam.push(data);
+                
+                currentTeam.push(data);
                 saveTeam();
                 updateTeamUI();
-                alert(`${data.name.toUpperCase()} a rejoint ton équipe !`);
+                alert(`${data.name.toUpperCase()} a rejoint l'équipe ${activeTeamId} !`);
             });
 
             // Gestion de la fermeture
@@ -193,12 +197,13 @@ export async function showPokemonDetail(id: string) {
 export function updateTeamUI() {
     const teamList = document.getElementById('team-list');
     const teamCount = document.getElementById('team-count');
+    const currentTeam = getActiveTeam(); // Récupère l'équipe active
     
-    if (teamCount) teamCount.textContent = playerTeam.length.toString();
+    if (teamCount) teamCount.textContent = currentTeam.length.toString();
 
     if (teamList) {
         teamList.innerHTML = '';
-        playerTeam.forEach((pokemon: any) => {
+        currentTeam.forEach((pokemon: any) => {
             const memberDiv = document.createElement('div');
             memberDiv.className = 'team-member-card';
             
@@ -231,8 +236,9 @@ export function updateTeamUI() {
 }
 
 export function removeFromTeam(id: number) {
-    const newTeam = playerTeam.filter(p => p.id !== id);
-    setPlayerTeam(newTeam);
+    const currentTeam = getActiveTeam();
+    const newTeam = currentTeam.filter((p: any) => p.id !== id);
+    setPlayerTeam(newTeam); // Met à jour l'équipe active dans l'objet global
     saveTeam();
     updateTeamUI();
 }
@@ -241,18 +247,19 @@ export function removeFromTeam(id: number) {
 
 function analyzeTeamTypes() {
     const analysisDiv = document.getElementById('team-analysis');
+    const currentTeam = getActiveTeam();
     if (!analysisDiv) return;
 
     const typeCounts: { [key: string]: number } = {};
-    playerTeam.forEach(pokemon => {
+    currentTeam.forEach((pokemon: any) => {
         pokemon.types.forEach((t: any) => {
             const typeName = t.type.name;
             typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
         });
     });
 
-    let html = '<h3>Analyse de l\'équipe</h3>';
-    if (playerTeam.length === 0) {
+    let html = `<h3>Analyse de l'équipe ${activeTeamId}</h3>`;
+    if (currentTeam.length === 0) {
         html += '<p>Votre équipe est vide.</p>';
     } else {
         for (const [type, count] of Object.entries(typeCounts)) {
@@ -260,7 +267,7 @@ function analyzeTeamTypes() {
             html += `
                 <div class="analysis-row">
                     <span class="type-badge ${type}">${type.toUpperCase()}</span> : ${count}
-                    ${isWarning ? '<br><small style="color: #ffcc00">⚠️ Risque de faiblesse aux contres ${type}</small>' : ''}
+                    ${isWarning ? `<br><small style="color: #ffcc00">⚠️ Risque de faiblesse aux contres ${type}</small>` : ''}
                 </div>
             `;
         }
