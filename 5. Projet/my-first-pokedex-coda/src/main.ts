@@ -7,10 +7,11 @@ import {
     allPokemons, 
     setFilteredPokemons, 
     currentPage, 
-    setCurrentPage 
+    setCurrentPage, 
+    loadTeam
 } from './state';
 import { movePlayer, updatePlayerPosition } from './gameLogic';
-import { fetchAllPokemons, updateDisplay } from './pokedex';
+import { fetchAllPokemons, updateDisplay, updateTeamUI } from './pokedex';
 import { pokemonTransition } from './utils';
 
 // --- INITIALISATION DES AUDIOS ---
@@ -18,7 +19,7 @@ const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
 const roomMusic = new Audio('/src/assets/theme.mp3');
 const pokedexMusic = new Audio('/src/assets/pokedex.mp3');
 
-roomMusic.loop = true; 
+roomMusic.loop = true;
 roomMusic.volume = 0.4;
 pokedexMusic.loop = true; 
 pokedexMusic.volume = 0.4;
@@ -107,5 +108,19 @@ document.getElementById('back-to-room')?.addEventListener('click', () => {
     });
 });
 
+// Ouvrir le panneau (Clic sur la Pokéball/Texte Équipe)
+document.getElementById('open-team')?.addEventListener('click', () => {
+    const teamPanel = document.getElementById('team-panel');
+    teamPanel?.classList.remove('hidden'); // Affiche le panneau
+    updateTeamUI(); // Force la mise à jour visuelle des membres et de l'analyse
+});
+
+// Fermer le panneau (Bouton RETOUR du panneau latéral)
+document.getElementById('close-team')?.addEventListener('click', () => {
+    document.getElementById('team-panel')?.classList.add('hidden');
+});
+
 // --- LANCEMENT INITIAL ---
+loadTeam();
 fetchAllPokemons();
+updateTeamUI(); // Initialise l'affichage au chargement

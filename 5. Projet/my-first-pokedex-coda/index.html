@@ -2,18 +2,20 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>Mon Pokédex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Pokédex - Aventure</title>
     <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-<div id="screen-wiper"></div>    
-<div id="intro-screen">
+    <div id="screen-wiper"></div>    
+
+    <div id="intro-screen">
         <div class="intro-content">
-            <img src="src/assets/kuyrem.gif" class="kyurem-sprite">
+            <img src="src/assets/kuyrem.gif" class="kyurem-sprite" alt="Kyurem">
             <p class="blink">APPUYEZ SUR UNE TOUCHE</p>
         </div>
         <div class="copyright-info">
-    <p>©2026 Pokémon. ©1995-2026 Nintendo/Hugo et Florian Inc./GAME FREAK inc.</p>
+            <p>©2026 Pokémon. ©1995-2026 Nintendo/Hugo et Florian Inc./GAME FREAK inc.</p>
         </div>
     </div>
 
@@ -21,11 +23,16 @@
         <div id="room">
             <div id="pc-desk"></div> 
             <img src="src/assets/pikachu.gif" class="pikachu" alt="Pikachu">
+            
             <div id="player" class="back">
                 <div id="player-bubble">Réveille-toi, l'aventure commence ! <br> Utilise le PC pour le Pokédex.</div>
             </div> 
         </div>
         
+        <div id="ma-bulle-dialogue" class="hidden">
+            Appuyez sur ENTRÉE pour interagir
+        </div>
+
         <div id="dialogue-box" class="hidden">
             <div class="dialogue-inner">
                 <p id="dialogue-text"></p>
@@ -34,13 +41,17 @@
         </div>
     </div>
 
-<div id="ma-bulle-dialogue" class="hidden">
-    Appuyez sur ENTRÉE pour interagir
-</div>
-
     <div id="pokedex-app" class="hidden">
         <div id="app">
-          <button id="back-to-room" class="pixel-button">RETOUR</button>
+            <div class="top-bar">
+                <button id="back-to-room" class="pixel-button">RETOUR</button>
+                
+                <div id="open-team" class="team-trigger" style="cursor: pointer;">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" width="30">
+                    <span>Équipe : <span id="team-count">0</span>/6</span>
+                </div>
+            </div>
+
             <h1>Pokédex</h1>
             
             <div class="controls">
@@ -50,19 +61,37 @@
             <ul id="pokemon-list"></ul>
 
             <div class="pagination-controls">
-                <button id="prev-page">Précédent</button>
+                <button id="prev-page" class="pixel-button">Précédent</button>
                 <span id="page-info">Page 1</span>
-                <button id="next-page">Suivant</button>
+                <button id="next-page" class="pixel-button">Suivant</button>
             </div>
         </div>
     </div>
 
-    <div id="pokemon-modal" class="hidden">
-        <div class="modal-content">
-            <button id="close-modal" aria-label="Fermer">Fermer</button>
-            <div id="modal-body"></div>
+    <div id="team-panel" class="hidden">
+        <div class="team-header">
+            <button id="close-team" class="pixel-button">RETOUR</button>
+            <h2>VOTRE ÉQUIPE</h2>
+        </div>
+        
+        <div id="team-list">
+            </div>
+
+        <div id="team-analysis">
+            <h3>Analyse de l'équipe</h3>
+            <p>Votre équipe est vide.</p>
         </div>
     </div>
+
+    <div id="pokemon-modal" class="hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button id="close-modal" class="close-btn" aria-label="Fermer">×</button>
+            <div id="modal-body">
+                </div>
+        </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

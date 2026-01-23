@@ -1,11 +1,22 @@
 import type { Pokemon } from './types';
-import { filteredPokemons, currentPage, itemsPerPage, setAllPokemons } from './state';
+import { 
+    filteredPokemons, 
+    currentPage, 
+    itemsPerPage, 
+    setAllPokemons, 
+    playerTeam, 
+    saveTeam, 
+    setPlayerTeam 
+} from './state';
 
+// Éléments du DOM
 const listElement = document.getElementById('pokemon-list') as HTMLUListElement;
 const pageInfo = document.getElementById('page-info');
 const modal = document.getElementById('pokemon-modal');
 const modalBody = document.getElementById('modal-body');
 const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
+
+/** --- LOGIQUE DU POKÉDEX --- **/
 
 export async function fetchAllPokemons() {
     try {
@@ -13,7 +24,9 @@ export async function fetchAllPokemons() {
         const data = await response.json();
         setAllPokemons(data.results);
         updateDisplay();
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+        console.error("Erreur Fetch Liste:", error); 
+    }
 }
 
 export function updateDisplay() {
@@ -27,7 +40,6 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
     if (!listElement) return;
     listElement.innerHTML = '';
 
-    // Chargement des données en parallèle
     const pokemonCards = await Promise.all(pokemonsToDisplay.map(async (pokemon) => {
         const urlParts = pokemon.url.split('/');
         const pokemonId = parseInt(urlParts[urlParts.length - 2]);
@@ -58,25 +70,22 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
         li.appendChild(typesContainer);
 
         li.addEventListener('click', () => showPokemonDetail(pokemonId.toString()));
-
         return { id: pokemonId, element: li };
     }));
 
     pokemonCards.sort((a, b) => a.id - b.id);
-
-    pokemonCards.forEach(card => {
-        listElement.appendChild(card.element);
-    });
+    pokemonCards.forEach(card => listElement.appendChild(card.element));
 }
+
+/** --- DÉTAILS ET AJOUT À L'ÉQUIPE --- **/
 
 export async function showPokemonDetail(id: string) {
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-        const data = await response.json();
+        const data: any = await response.json();
         startSound.play().catch(() => {});
 
         const cryUrl = data.cries?.latest || data.cries?.legacy;
-
         const typesHTML = data.types.map((t: any) => `
             <span class="type-badge ${t.type.name}">${t.type.name.toUpperCase()}</span>
         `).join('');
@@ -84,47 +93,179 @@ export async function showPokemonDetail(id: string) {
         const statsHTML = data.stats.map((s: any) => `
             <div class="stat-line">
                 <span class="stat-name">${s.stat.name.toUpperCase()}</span>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${Math.min(s.base_stat, 100)}%"></div></div>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar-fill" style="width: ${Math.min(s.base_stat, 100)}%"></div>
+                </div>
                 <span class="stat-value">${s.base_stat}</span>
             </div>`).join('');
 
         if (modalBody) {
             modalBody.innerHTML = `
-                <div class="modal-detail">
-                    <div class="image-container">
-                        <img id="pokemon-artwork" src="${data.sprites.other['official-artwork'].front_default}">
-                    </div>
-                    <div class="header-detail">
-                        <h2>${data.name.toUpperCase()}</h2>
-                        ${cryUrl ? `<button class="cry-button" id="btn-cry">🔊 CRI</button>` : ''}
-                    </div>
-                    <div class="info-grid">
-                        <div class="physique">
-                            <p><strong>N° :</strong> ${data.id}</p>
-                            <p><strong>Taille :</strong> ${data.height / 10} m</p>
-                            <p><strong>Poids :</strong> ${data.weight / 10} kg</p>
-                            <div class="detail-types">
-                                <strong>Types :</strong>
-                                <div class="types-container">${typesHTML}</div>
-                            </div>
-                        </div>
-                        <div class="stats-section">${statsHTML}</div>
-                    </div>
-                </div>`;
+            <div class="pokedex-kalos">
+                <button id="close-modal">X</button>
 
+                <div class="pokedex-left">
+                    <div class="pokedex-main-screen">
+                        <div class="artwork-container" id="artwork-trigger" style="cursor: pointer;">
+                            <img id="pokemon-artwork" src="${data.sprites.other['official-artwork'].front_default}" alt="${data.name}">
+                        </div>
+                        <div class="screen-footer">
+                            <h2 class="pokedex-name">${data.name.toUpperCase()}</h2>
+                            <button class="add-team-btn" id="btn-add-team">AJOUTER À L'ÉQUIPE</button>
+                        </div>
+                    </div>
+                    <div class="dpad">
+                        <div class="dpad-btn up"></div>
+                        <div class="dpad-btn down"></div>
+                        <div class="dpad-btn left"></div>
+                        <div class="dpad-btn right"></div>
+                    </div>
+                </div>
+
+                <div class="pokedex-right">
+                    <div class="pokedex-data-screen">
+                        <div class="data-header">
+                            <p>N° : ${data.id}</p>
+                            <p>HT : ${data.height / 10} m</p>
+                            <p>WT : ${data.weight / 10} kg</p>
+                        </div>
+                        <div class="types-section">
+                            <p>TYPES :</p>
+                            <div class="types-container">${typesHTML}</div>
+                        </div>
+                        <div class="stats-container">
+                            <h3>STATISTIQUES BASE</h3>
+                            ${statsHTML}
+                        </div>
+                    </div>
+                    <div class="abxy-cluster">
+                        <div class="btn-ds btn-x">X</div>
+                        <div class="btn-ds btn-y">Y</div>
+                        <div class="btn-ds btn-a">A</div>
+                        <div class="btn-ds btn-b">B</div>
+                    </div>
+                </div>
+            </div>`;
+
+            // Logique du cri et animation lors du clic sur l'image
             if (cryUrl) {
-                document.getElementById('btn-cry')?.addEventListener('click', () => {
+                const trigger = document.getElementById('artwork-trigger');
+                trigger?.addEventListener('click', () => {
                     const audio = new Audio(cryUrl);
                     audio.volume = 0.4;
                     audio.play();
+
                     const img = document.getElementById('pokemon-artwork');
                     img?.classList.add('bounce-animation');
                     setTimeout(() => img?.classList.remove('bounce-animation'), 500);
                 });
             }
+
+            // Gestion de l'ajout à l'équipe
+            document.getElementById('btn-add-team')?.addEventListener('click', () => {
+                if (playerTeam.length >= 6) {
+                    alert("Équipe complète (6 max) !");
+                    return;
+                }
+                if (playerTeam.some(p => p.id === data.id)) {
+                    alert("Ce Pokémon est déjà dans l'équipe !");
+                    return;
+                }
+                playerTeam.push(data);
+                saveTeam();
+                updateTeamUI();
+                alert(`${data.name.toUpperCase()} a rejoint ton équipe !`);
+            });
+
+            // Gestion de la fermeture
+            document.getElementById('close-modal')?.addEventListener('click', () => {
+                modal?.classList.add('hidden');
+            });
         }
         modal?.classList.remove('hidden');
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+        console.error("Erreur Détails:", error); 
+    }
+}
+
+/** --- GESTIONNAIRE D'ÉQUIPE VISUEL --- **/
+
+export function updateTeamUI() {
+    const teamList = document.getElementById('team-list');
+    const teamCount = document.getElementById('team-count');
+    
+    if (teamCount) teamCount.textContent = playerTeam.length.toString();
+
+    if (teamList) {
+        teamList.innerHTML = '';
+        playerTeam.forEach((pokemon: any) => {
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'team-member-card';
+            
+            const movesHTML = pokemon.moves.slice(0, 4).map((m: any) => 
+                `<span class="move-tag">${m.move.name.replace('-', ' ')}</span>`
+            ).join('');
+
+            memberDiv.innerHTML = `
+                <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+                <div class="member-info">
+                    <span class="member-name">${pokemon.name.toUpperCase()}</span>
+                    <div class="member-types">
+                        ${pokemon.types.map((t: any) => `<span class="mini-type ${t.type.name}"></span>`).join('')}
+                    </div>
+                    <div class="member-moves">${movesHTML}</div>
+                </div>
+                <button class="remove-btn" data-id="${pokemon.id}">❌</button>
+            `;
+            teamList.appendChild(memberDiv);
+        });
+
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt((e.currentTarget as HTMLElement).dataset.id!);
+                removeFromTeam(id);
+            });
+        });
+    }
+    analyzeTeamTypes();
+}
+
+export function removeFromTeam(id: number) {
+    const newTeam = playerTeam.filter(p => p.id !== id);
+    setPlayerTeam(newTeam);
+    saveTeam();
+    updateTeamUI();
+}
+
+/** --- ANALYSEUR DE TYPES ET FAIBLESSES --- **/
+
+function analyzeTeamTypes() {
+    const analysisDiv = document.getElementById('team-analysis');
+    if (!analysisDiv) return;
+
+    const typeCounts: { [key: string]: number } = {};
+    playerTeam.forEach(pokemon => {
+        pokemon.types.forEach((t: any) => {
+            const typeName = t.type.name;
+            typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
+        });
+    });
+
+    let html = '<h3>Analyse de l\'équipe</h3>';
+    if (playerTeam.length === 0) {
+        html += '<p>Votre équipe est vide.</p>';
+    } else {
+        for (const [type, count] of Object.entries(typeCounts)) {
+            const isWarning = count >= 3;
+            html += `
+                <div class="analysis-row">
+                    <span class="type-badge ${type}">${type.toUpperCase()}</span> : ${count}
+                    ${isWarning ? '<br><small style="color: #ffcc00">⚠️ Risque de faiblesse aux contres ${type}</small>' : ''}
+                </div>
+            `;
+        }
+    }
+    analysisDiv.innerHTML = html;
 }
 
 function updatePaginationUI() {
