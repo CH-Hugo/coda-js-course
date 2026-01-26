@@ -7,11 +7,9 @@ import {
     allPokemons, 
     setFilteredPokemons, 
     currentPage, 
-    setCurrentPage, 
+    setCurrentPage,
     loadTeam,
-    setActiveTeamId, // Ajouté pour changer d'équipe
-    activeTeamId     // Ajouté pour le style visuel
-} from './state';
+    setActiveTeamId} from './state';
 import { movePlayer, updatePlayerPosition } from './gameLogic';
 import { fetchAllPokemons, updateDisplay, updateTeamUI } from './pokedex';
 import { pokemonTransition } from './utils';
