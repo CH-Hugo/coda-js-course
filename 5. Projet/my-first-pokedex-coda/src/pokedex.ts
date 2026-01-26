@@ -1,13 +1,13 @@
 import type { Pokemon } from './types';
-import { 
-    filteredPokemons, 
-    currentPage, 
-    itemsPerPage, 
-    setAllPokemons, 
+import {
+    filteredPokemons,
+    currentPage,
+    itemsPerPage,
+    setAllPokemons,
     getActiveTeam, // Remplace playerTeam pour la lecture
     activeTeamId,  // Pour savoir quelle équipe on modifie
-    saveTeam, 
-    setPlayerTeam 
+    saveTeam,
+    setPlayerTeam
 } from './state';
 
 // Éléments du DOM
@@ -21,12 +21,12 @@ const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
 
 export async function fetchAllPokemons() {
     try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10025');
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
         const data = await response.json();
         setAllPokemons(data.results);
         updateDisplay();
-    } catch (error) { 
-        console.error("Erreur Fetch Liste:", error); 
+    } catch (error) {
+        console.error("Erreur Fetch Liste:", error);
     }
 }
 
@@ -78,6 +78,35 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
     pokemonCards.forEach(card => listElement.appendChild(card.element));
 }
 
+/** --- LOGIQUE DES ÉVOLUTIONS --- **/
+
+async function getEvolutionData(speciesUrl: string) {
+    try {
+        const speciesRes = await fetch(speciesUrl);
+        const speciesData = await speciesRes.json();
+
+        const evoRes = await fetch(speciesData.evolution_chain.url);
+        const evoData = await evoRes.json();
+
+        const evolutions = [];
+        let currentLevel = evoData.chain;
+
+        while (currentLevel) {
+            const pokemonId = currentLevel.species.url.split('/').filter(Boolean).pop();
+            evolutions.push({
+                name: currentLevel.species.name,
+                id: pokemonId,
+                sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`
+            });
+            currentLevel = currentLevel.evolves_to[0];
+        }
+        return evolutions;
+    } catch (error) {
+        console.error("Erreur Evolution:", error);
+        return [];
+    }
+}
+
 /** --- DÉTAILS ET AJOUT À L'ÉQUIPE --- **/
 
 export async function showPokemonDetail(id: string) {
@@ -85,6 +114,15 @@ export async function showPokemonDetail(id: string) {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
         const data: any = await response.json();
         startSound.play().catch(() => {});
+
+        // Récupération des évolutions
+        const evolutions = await getEvolutionData(data.species.url);
+        const evolutionsHTML = evolutions.map(evo => `
+            <div class="evo-item ${evo.id === id ? 'current-evo' : ''}" style="cursor:pointer; text-align:center;" data-id="${evo.id}">
+                <img src="${evo.sprite}" alt="${evo.name}" width="50">
+                <p style="font-size: 0.6rem; margin:0;">${evo.name.toUpperCase()}</p>
+            </div>
+        `).join('<span style="align-self:center;">→</span>');
 
         const cryUrl = data.cries?.latest || data.cries?.legacy;
         const typesHTML = data.types.map((t: any) => `
@@ -113,6 +151,12 @@ export async function showPokemonDetail(id: string) {
                         <div class="screen-footer">
                             <h2 class="pokedex-name">${data.name.toUpperCase()}</h2>
                             <button class="add-team-btn" id="btn-add-team">AJOUTER À L'ÉQUIPE ${activeTeamId}</button>
+                        </div>
+                        <div class="evolution-container" style="margin-top:10px; border-top: 1px solid #555; padding-top:5px;">
+                            <p style="font-size:0.7rem; margin-bottom:5px;">LIGNE D'ÉVOLUTION :</p>
+                            <div style="display:flex; justify-content: space-around;">
+                                ${evolutionsHTML}
+                            </div>
                         </div>
                     </div>
                     <div class="dpad">
@@ -148,6 +192,14 @@ export async function showPokemonDetail(id: string) {
                 </div>
             </div>`;
 
+            // Rendre les icônes d'évolution cliquables pour naviguer
+            document.querySelectorAll('.evo-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const targetId = (e.currentTarget as HTMLElement).dataset.id;
+                    if (targetId) showPokemonDetail(targetId);
+                });
+            });
+
             // Logique du cri et animation lors du clic sur l'image
             if (cryUrl) {
                 const trigger = document.getElementById('artwork-trigger');
@@ -162,10 +214,10 @@ export async function showPokemonDetail(id: string) {
                 });
             }
 
-            // Gestion de l'ajout à l'équipe (Équipe Active)
+            // Gestion de l'ajout à l'équipe
             document.getElementById('btn-add-team')?.addEventListener('click', () => {
-                const currentTeam = getActiveTeam(); // Récupère l'équipe 1, 2 ou 3 selon la sélection
-                
+                const currentTeam = getActiveTeam();
+
                 if (currentTeam.length >= 6) {
                     alert(`Équipe ${activeTeamId} complète (6 max) !`);
                     return;
@@ -174,7 +226,7 @@ export async function showPokemonDetail(id: string) {
                     alert("Ce Pokémon est déjà dans cette équipe !");
                     return;
                 }
-                
+
                 currentTeam.push(data);
                 saveTeam();
                 updateTeamUI();
@@ -187,8 +239,8 @@ export async function showPokemonDetail(id: string) {
             });
         }
         modal?.classList.remove('hidden');
-    } catch (error) { 
-        console.error("Erreur Détails:", error); 
+    } catch (error) {
+        console.error("Erreur Détails:", error);
     }
 }
 
@@ -197,8 +249,8 @@ export async function showPokemonDetail(id: string) {
 export function updateTeamUI() {
     const teamList = document.getElementById('team-list');
     const teamCount = document.getElementById('team-count');
-    const currentTeam = getActiveTeam(); // Récupère l'équipe active
-    
+    const currentTeam = getActiveTeam();
+
     if (teamCount) teamCount.textContent = currentTeam.length.toString();
 
     if (teamList) {
@@ -206,8 +258,8 @@ export function updateTeamUI() {
         currentTeam.forEach((pokemon: any) => {
             const memberDiv = document.createElement('div');
             memberDiv.className = 'team-member-card';
-            
-            const movesHTML = pokemon.moves.slice(0, 4).map((m: any) => 
+
+            const movesHTML = pokemon.moves.slice(0, 4).map((m: any) =>
                 `<span class="move-tag">${m.move.name.replace('-', ' ')}</span>`
             ).join('');
 
@@ -219,8 +271,8 @@ export function updateTeamUI() {
                         ${pokemon.types.map((t: any) => `<span class="mini-type ${t.type.name}"></span>`).join('')}
                     </div>
                     <div class="member-moves">${movesHTML}</div>
+                    <button class="remove-btn" data-id="${pokemon.id}">×</button>
                 </div>
-                <button class="remove-btn" data-id="${pokemon.id}">❌</button>
             `;
             teamList.appendChild(memberDiv);
         });
@@ -238,7 +290,7 @@ export function updateTeamUI() {
 export function removeFromTeam(id: number) {
     const currentTeam = getActiveTeam();
     const newTeam = currentTeam.filter((p: any) => p.id !== id);
-    setPlayerTeam(newTeam); // Met à jour l'équipe active dans l'objet global
+    setPlayerTeam(newTeam);
     saveTeam();
     updateTeamUI();
 }

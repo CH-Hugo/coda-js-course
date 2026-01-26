@@ -637,3 +637,37 @@ h1 {
     min-height: 200px;
     transition: opacity 0.3s ease;
 }
+
+/*block evolution */
+
+.evolution-chain-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    font-size: 0.7rem;
+}
+
+.evo-item {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.evo-item:hover {
+    transform: scale(1.1);
+}
+
+.evo-item.current-evo {
+    border: 1px solid gold;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.evo-arrow {
+    margin: 0 5px;
+    font-weight: bold;
+    color: #555;
+}
