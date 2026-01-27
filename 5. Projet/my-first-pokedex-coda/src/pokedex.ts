@@ -110,8 +110,12 @@ async function getEvolutionData(speciesUrl: string) {
 /** --- DÉTAILS ET AJOUT À L'ÉQUIPE --- **/
 
 export async function showPokemonDetail(id: string) {
+    // Sécurité : pas d'ID inférieur à 1 ou supérieur au max
+    const numericId = parseInt(id);
+    if (numericId < 1 || numericId > 1025) return;
+
     try {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${numericId}`);
         const data: any = await response.json();
         startSound.play().catch(() => {});
 
@@ -159,11 +163,12 @@ export async function showPokemonDetail(id: string) {
                             </div>
                         </div>
                     </div>
+                    
                     <div class="dpad">
-                        <div class="dpad-btn up"></div>
-                        <div class="dpad-btn down"></div>
-                        <div class="dpad-btn left"></div>
-                        <div class="dpad-btn right"></div>
+                        <button class="dpad-btn left" onclick="window.showPokemonDetail('${data.id - 1}')">  </button>
+                        <button class="dpad-btn right" onclick="window.showPokemonDetail('${data.id + 1}')"></button>
+                        <button class="dpad-btn left" onclick="window.showPokemonDetail('${data.id - 1}')"></button>
+                        <button class="dpad-btn right" onclick="window.showPokemonDetail('${data.id + 1}')"></button>
                     </div>
                 </div>
 
@@ -217,7 +222,6 @@ export async function showPokemonDetail(id: string) {
             // Gestion de l'ajout à l'équipe
             document.getElementById('btn-add-team')?.addEventListener('click', () => {
                 const currentTeam = getActiveTeam();
-
                 if (currentTeam.length >= 6) {
                     alert(`Équipe ${activeTeamId} complète (6 max) !`);
                     return;
@@ -226,7 +230,6 @@ export async function showPokemonDetail(id: string) {
                     alert("Ce Pokémon est déjà dans cette équipe !");
                     return;
                 }
-
                 currentTeam.push(data);
                 saveTeam();
                 updateTeamUI();
@@ -243,6 +246,9 @@ export async function showPokemonDetail(id: string) {
         console.error("Erreur Détails:", error);
     }
 }
+
+// Rend la fonction accessible globalement pour le onclick du D-Pad
+(window as any).showPokemonDetail = showPokemonDetail;
 
 /** --- GESTIONNAIRE D'ÉQUIPE VISUEL --- **/
 

@@ -413,7 +413,7 @@ h1 {
 .stat-line {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
 }
 
 .stat-name {
@@ -496,16 +496,59 @@ h1 {
     font-size: 1rem;
 }
 
-/* Boutons DS (DPAD & ABXY) */
+/* Conteneur principal de la croix */
 .dpad {
     position: absolute;
-    bottom: 30px;
-    left: 55px;
+    bottom: 20px; /* Ajusté pour coller au design de ton image */
+    left: 40px;
     width: 90px;
     height: 90px;
 }
-.dpad::before { width: 30px; height: 90px; left: 30px; content: ""; position: absolute; background: #333; }
-.dpad::after { width: 90px; height: 30px; top: 30px; content: ""; position: absolute; background: #333; }
+
+/* La forme de la croix (Verticale et Horizontale) */
+.dpad::before {
+    content: "";
+    position: absolute;
+    background: #333; /* Couleur gris foncé/noir */
+    width: 30px;
+    height: 90px;
+    left: 30px;
+    top: 0;
+    border-radius: 4px;
+}
+
+.dpad::after {
+    content: "";
+    position: absolute;
+    background: #333;
+    width: 90px;
+    height: 30px;
+    left: 0;
+    top: 30px;
+    border-radius: 4px;
+}
+
+/* Tes boutons invisibles qui servent de zone cliquable */
+.dpad-btn {
+    position: absolute;
+    z-index: 20; /* Au-dessus de la croix dessinée */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.dpad-btn.up    { top: 0; left: 30px; }
+.dpad-btn.down  { bottom: 0; left: 30px; }
+.dpad-btn.left  { top: 30px; left: 0; }
+.dpad-btn.right { top: 30px; right: 0; }
+
+/* Effet visuel quand on appuie */
+.dpad-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
 
 .abxy-cluster {
     position: absolute;
@@ -539,10 +582,17 @@ h1 {
     display: flex;
     gap: 5px;
     justify-content: center;
+    margin-left: 20px;
+}
+
+.types-section{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .type-badge {
-    padding: 3px 8px;
+    padding: 7px 12px;
     border-radius: 4px;
     color: white;
     font-size: 0.6rem;
@@ -662,8 +712,18 @@ h1 {
 }
 
 .evo-item.current-evo {
-    border: 1px solid gold;
-    background: rgba(255, 215, 0, 0.1);
+    /* Rouge pur avec 30% d'opacité (ajuste le 0.3 pour plus ou moins de transparence) */
+    background-color: rgba(255, 0, 0, 0.3);
+
+    border-radius: 5%;
+
+    /* Optionnel : assure que le contenu est bien centré dans le cercle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Ajoute un petit padding pour que le cercle ne colle pas aux bords de l'image */
+    padding: 5px;
 }
 
 .evo-arrow {
