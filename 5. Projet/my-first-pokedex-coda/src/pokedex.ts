@@ -21,7 +21,7 @@ const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
 
 export async function fetchAllPokemons() {
     try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10025');
         const data = await response.json();
         setAllPokemons(data.results);
         updateDisplay();
