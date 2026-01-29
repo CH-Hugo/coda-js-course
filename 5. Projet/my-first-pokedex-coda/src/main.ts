@@ -72,6 +72,8 @@ document.getElementById('search-input')?.addEventListener('input', (e) => {
     updateDisplay();
 });
 
+//Filtre de recherche
+
 // Boutons de pagination
 document.getElementById('next-page')?.addEventListener('click', () => { 
     setCurrentPage(currentPage + 1); 

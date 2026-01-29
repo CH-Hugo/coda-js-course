@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-    <div id="screen-wiper"></div>    
+    <div id="screen-wiper"></div>
 
     <div id="intro-screen">
         <div class="intro-content">
@@ -21,14 +21,14 @@
 
     <div id="game-world" class="hidden">
         <div id="room">
-            <div id="pc-desk"></div> 
+            <div id="pc-desk"></div>
             <img src="src/assets/pikachu.gif" class="pikachu" alt="Pikachu">
-            
+
             <div id="player" class="back">
                 <div id="player-bubble">Réveille-toi, l'aventure commence ! <br> Utilise le PC pour le Pokédex.</div>
-            </div> 
+            </div>
         </div>
-        
+
         <div id="ma-bulle-dialogue" class="hidden">
             Appuyez sur ENTRÉE pour interagir
         </div>
@@ -45,7 +45,7 @@
         <div id="app">
             <div class="top-bar">
                 <button id="back-to-room" class="pixel-button">RETOUR</button>
-                
+
                 <div id="open-team" class="team-trigger" style="cursor: pointer;">
                     <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" width="30">
                     <span>Équipe : <span id="team-count">0</span>/6</span>
@@ -53,9 +53,59 @@
             </div>
 
             <h1>Pokédex</h1>
-            
+
             <div class="controls">
                 <input type="text" id="search-input" placeholder="Rechercher un Pokémon...">
+            </div>
+            <div id="filter-panel" class="pokedex-filter-panel">
+                <div class="filter-group">
+                    <label for="filter-type">TYPE</label>
+                    <select id="filter-type">
+                        <option value="">TOUS</option>
+                        <option value="normal">NORMAL</option>
+                        <option value="fire">FEU</option>
+                        <option value="water">EAU</option>
+                        <option value="grass">PLANTE</option>
+                        <option value="electric">ÉLECTRIK</option>
+                        <option value="ice">GLACE</option>
+                        <option value="fighting">COMBAT</option>
+                        <option value="poison">POISON</option>
+                        <option value="ground">SOL</option>
+                        <option value="flying">VOL</option>
+                        <option value="psychic">PSY</option>
+                        <option value="bug">INSECTE</option>
+                        <option value="rock">ROCHE</option>
+                        <option value="ghost">SPECTRE</option>
+                        <option value="dragon">DRAGON</option>
+                        <option value="dark">TÉNÈBRES</option>
+                        <option value="steel">ACIER</option>
+                        <option value="fairy">FÉE</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-gen">GÉNÉRATION</label>
+                    <select id="filter-gen">
+                        <option value="0">TOUTES</option>
+                        <option value="1">GEN 1 (KANTO)</option>
+                        <option value="2">GEN 2 (JOHTO)</option>
+                        <option value="3">GEN 3 (HOENN)</option>
+                        <option value="4">GEN 4 (SINNOH)</option>
+                        <option value="5">GEN 5 (UNOVA)</option>
+                        <option value="6">GEN 6 (KALOS)</option>
+                        <option value="7">GEN 7 (ALOLA)</option>
+                        <option value="8">GEN 8 (GALAR)</option>
+                        <option value="9">GEN 9 (PALDEA)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-ability">CAPACITÉ</label>
+                    <input type="text" id="filter-ability" placeholder="ex: Intimidate...">
+                </div>
+
+                <button id="btn-reset-filters" class="btn-filter">RÉINITIALISER</button>
+                <button id="btn-apply-filters" class="btn-filter">SELECT</button>
             </div>
 
             <ul id="pokemon-list"></ul>
@@ -79,7 +129,7 @@
         <button id="tab-2" class="team-tab">ÉQUIPE 2</button>
         <button id="tab-3" class="team-tab">ÉQUIPE 3</button>
     </div>
-    
+
     <div id="team-list">
         </div>
 

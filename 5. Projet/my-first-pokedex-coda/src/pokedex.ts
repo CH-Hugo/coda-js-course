@@ -1,13 +1,18 @@
 import type { Pokemon } from './types';
 import {
+    allPokemons,
     filteredPokemons,
     currentPage,
     itemsPerPage,
     setAllPokemons,
-    getActiveTeam, // Remplace playerTeam pour la lecture
-    activeTeamId,  // Pour savoir quelle équipe on modifie
+    setFilteredPokemons,
+    getActiveTeam,
+    activeTeamId,
     saveTeam,
-    setPlayerTeam
+    setCurrentPage,
+    updateFilters,
+    activeFilters,
+    resetFilters
 } from './state';
 
 // Éléments du DOM
@@ -17,16 +22,47 @@ const modal = document.getElementById('pokemon-modal');
 const modalBody = document.getElementById('modal-body');
 const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
 
+function getGenerationById(id: number): number {
+    if (id <= 0) return 0;
+    if (id <= 151) return 1;  // Kanto
+    if (id <= 251) return 2;  // Johto
+    if (id <= 386) return 3;  // Hoenn
+    if (id <= 493) return 4;  // Sinnoh
+    if (id <= 649) return 5;  // Unova
+    if (id <= 721) return 6;  // Kalos
+    if (id <= 809) return 7;  // Alola
+    if (id <= 898) return 8;  // Galar
+    if (id <= 1025) return 9; // Paldea
+    return 0;
+}
+
 /** --- LOGIQUE DU POKÉDEX --- **/
 
 export async function fetchAllPokemons() {
     try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10025');
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1300');
         const data = await response.json();
-        setAllPokemons(data.results);
+
+        const detailedPokemons = await Promise.all(
+            data.results.map(async (pokemon: any) => {
+                const res = await fetch(pokemon.url);
+                const details = await res.json();
+
+                return {
+                    name: pokemon.name,
+                    url: pokemon.url,
+                    id: details.id,
+                    types: details.types,
+                    abilities: details.abilities,
+                    generation: getGenerationById(details.id)
+                };
+            })
+        );
+
+        setAllPokemons(detailedPokemons);
         updateDisplay();
     } catch (error) {
-        console.error("Erreur Fetch Liste:", error);
+        console.error("Erreur d'initialisation du Pokédex:", error);
     }
 }
 
@@ -78,6 +114,50 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
     pokemonCards.forEach(card => listElement.appendChild(card.element));
 }
 
+/** --- LOGIQUE DES FILTRES --- **/
+
+function applyAllFilters() {
+    // 1. Récupération des valeurs HTML
+    const nameVal = (document.getElementById('search-input') as HTMLInputElement)?.value.toLowerCase() || "";
+    const typeVal = (document.getElementById('filter-type') as HTMLSelectElement).value;
+    const genVal = parseInt((document.getElementById('filter-gen') as HTMLSelectElement).value);
+    const abilityVal = (document.getElementById('filter-ability') as HTMLInputElement).value.toLowerCase();
+
+    // 2. Mise à jour du state
+    updateFilters('name', nameVal);
+    updateFilters('type', typeVal);
+    updateFilters('gen', genVal);
+    updateFilters('ability', abilityVal);
+
+    // 3. Filtrage de la liste globale
+    const result = allPokemons.filter(p => {
+        const matchesName = p.name.toLowerCase().includes(activeFilters.name);
+        const matchesType = activeFilters.type === "" || p.types.some(t => t.type.name === activeFilters.type);
+        const matchesGen = activeFilters.gen === 0 || p.generation === activeFilters.gen;
+        const matchesAbility = activeFilters.ability === "" || p.abilities.some(a => a.ability.name.toLowerCase().includes(activeFilters.ability));
+
+        return matchesName && matchesType && matchesGen && matchesAbility;
+    });
+
+    setFilteredPokemons(result);
+    setCurrentPage(0);
+    updateDisplay();
+}
+
+// Écouteur pour le bouton SELECT (à placer dans ton code d'init)
+document.getElementById('btn-apply-filters')?.addEventListener('click', applyAllFilters);
+
+// Écouteur pour le bouton RÉINITIALISER
+document.getElementById('btn-reset-filters')?.addEventListener('click', () => {
+    resetFilters();
+    // Reset visuel des champs
+    (document.getElementById('search-input') as HTMLInputElement).value = "";
+    (document.getElementById('filter-type') as HTMLSelectElement).value = "";
+    (document.getElementById('filter-gen') as HTMLSelectElement).value = "0";
+    (document.getElementById('filter-ability') as HTMLInputElement).value = "";
+    updateDisplay();
+});
+
 /** --- LOGIQUE DES ÉVOLUTIONS --- **/
 
 async function getEvolutionData(speciesUrl: string) {
@@ -110,16 +190,14 @@ async function getEvolutionData(speciesUrl: string) {
 /** --- DÉTAILS ET AJOUT À L'ÉQUIPE --- **/
 
 export async function showPokemonDetail(id: string) {
-    // Sécurité : pas d'ID inférieur à 1 ou supérieur au max
     const numericId = parseInt(id);
-    if (numericId < 1 || numericId > 1025) return;
+    if (!((numericId >= 1 && numericId <= 1025) || (numericId >= 10001 && numericId <= 10300))) return;
 
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${numericId}`);
         const data: any = await response.json();
         startSound.play().catch(() => {});
 
-        // Récupération des évolutions
         const evolutions = await getEvolutionData(data.species.url);
         const evolutionsHTML = evolutions.map(evo => `
             <div class="evo-item ${evo.id === id ? 'current-evo' : ''}" style="cursor:pointer; text-align:center;" data-id="${evo.id}">
@@ -146,7 +224,6 @@ export async function showPokemonDetail(id: string) {
             modalBody.innerHTML = `
             <div class="pokedex-kalos">
                 <button id="close-modal">X</button>
-
                 <div class="pokedex-left">
                     <div class="pokedex-main-screen">
                         <div class="artwork-container" id="artwork-trigger" style="cursor: pointer;">
@@ -163,15 +240,11 @@ export async function showPokemonDetail(id: string) {
                             </div>
                         </div>
                     </div>
-                    
                     <div class="dpad">
-                        <button class="dpad-btn left" onclick="window.showPokemonDetail('${data.id - 1}')">  </button>
-                        <button class="dpad-btn right" onclick="window.showPokemonDetail('${data.id + 1}')"></button>
                         <button class="dpad-btn left" onclick="window.showPokemonDetail('${data.id - 1}')"></button>
                         <button class="dpad-btn right" onclick="window.showPokemonDetail('${data.id + 1}')"></button>
                     </div>
                 </div>
-
                 <div class="pokedex-right">
                     <div class="pokedex-data-screen">
                         <div class="data-header">
@@ -188,16 +261,9 @@ export async function showPokemonDetail(id: string) {
                             ${statsHTML}
                         </div>
                     </div>
-                    <div class="abxy-cluster">
-                        <div class="btn-ds btn-x">X</div>
-                        <div class="btn-ds btn-y">Y</div>
-                        <div class="btn-ds btn-a">A</div>
-                        <div class="btn-ds btn-b">B</div>
-                    </div>
                 </div>
             </div>`;
 
-            // Rendre les icônes d'évolution cliquables pour naviguer
             document.querySelectorAll('.evo-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     const targetId = (e.currentTarget as HTMLElement).dataset.id;
@@ -205,21 +271,18 @@ export async function showPokemonDetail(id: string) {
                 });
             });
 
-            // Logique du cri et animation lors du clic sur l'image
             if (cryUrl) {
                 const trigger = document.getElementById('artwork-trigger');
                 trigger?.addEventListener('click', () => {
                     const audio = new Audio(cryUrl);
                     audio.volume = 0.4;
                     audio.play();
-
                     const img = document.getElementById('pokemon-artwork');
                     img?.classList.add('bounce-animation');
                     setTimeout(() => img?.classList.remove('bounce-animation'), 500);
                 });
             }
 
-            // Gestion de l'ajout à l'équipe
             document.getElementById('btn-add-team')?.addEventListener('click', () => {
                 const currentTeam = getActiveTeam();
                 if (currentTeam.length >= 6) {
@@ -236,7 +299,6 @@ export async function showPokemonDetail(id: string) {
                 alert(`${data.name.toUpperCase()} a rejoint l'équipe ${activeTeamId} !`);
             });
 
-            // Gestion de la fermeture
             document.getElementById('close-modal')?.addEventListener('click', () => {
                 modal?.classList.add('hidden');
             });
@@ -247,7 +309,6 @@ export async function showPokemonDetail(id: string) {
     }
 }
 
-// Rend la fonction accessible globalement pour le onclick du D-Pad
 (window as any).showPokemonDetail = showPokemonDetail;
 
 /** --- GESTIONNAIRE D'ÉQUIPE VISUEL --- **/
