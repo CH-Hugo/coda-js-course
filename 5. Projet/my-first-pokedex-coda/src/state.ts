@@ -30,34 +30,29 @@ export const setFilteredPokemons = (data: Pokemon[]) => { filteredPokemons = dat
 
 /** --- GESTION DES 3 ÉQUIPES --- **/
 
-// On stocke les 3 équipes dans un seul objet
 export let teams: { [key: number]: any[] } = {
     1: [],
     2: [],
     3: []
 };
 
-// On garde une trace de l'équipe actuellement affichée (1, 2 ou 3)
 export let activeTeamId = 1;
 
 export const setActiveTeamId = (id: number) => {
     if (id >= 1 && id <= 3) activeTeamId = id;
 };
 
-// Helper pour récupérer l'équipe active plus facilement
 export const getActiveTeam = () => teams[activeTeamId];
 
 export const setPlayerTeam = (newTeam: any[]) => {
     teams[activeTeamId] = [...newTeam];
 };
 
-// Sauvegarde globale des 3 équipes
 export function saveTeam() {
     localStorage.setItem('pokemonTeams', JSON.stringify(teams));
     localStorage.setItem('activeTeamId', activeTeamId.toString());
 }
 
-// Charge tout au démarrage
 export function loadTeam() {
     const savedTeams = localStorage.getItem('pokemonTeams');
     const savedActiveId = localStorage.getItem('activeTeamId');
