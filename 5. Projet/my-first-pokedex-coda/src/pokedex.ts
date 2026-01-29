@@ -12,7 +12,8 @@ import {
     setCurrentPage,
     updateFilters,
     activeFilters,
-    resetFilters
+    resetFilters,
+    setPlayerTeam
 } from './state';
 
 // Éléments du DOM
