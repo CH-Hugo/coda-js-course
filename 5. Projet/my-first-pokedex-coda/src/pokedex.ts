@@ -16,7 +16,6 @@ import {
     setPlayerTeam
 } from './state';
 
-// Éléments du DOM
 const listElement = document.getElementById('pokemon-list') as HTMLUListElement;
 const pageInfo = document.getElementById('page-info');
 const modal = document.getElementById('pokemon-modal');
@@ -25,19 +24,17 @@ const startSound = new Audio('/src/assets/pokemon-plink_.mp3');
 
 function getGenerationById(id: number): number {
     if (id <= 0) return 0;
-    if (id <= 151) return 1;  // Kanto
-    if (id <= 251) return 2;  // Johto
-    if (id <= 386) return 3;  // Hoenn
-    if (id <= 493) return 4;  // Sinnoh
-    if (id <= 649) return 5;  // Unova
-    if (id <= 721) return 6;  // Kalos
-    if (id <= 809) return 7;  // Alola
-    if (id <= 898) return 8;  // Galar
-    if (id <= 1025) return 9; // Paldea
+    if (id <= 151) return 1;
+    if (id <= 251) return 2;
+    if (id <= 386) return 3;
+    if (id <= 493) return 4;
+    if (id <= 649) return 5;
+    if (id <= 721) return 6;
+    if (id <= 809) return 7;
+    if (id <= 898) return 8;
+    if (id <= 1025) return 9;
     return 0;
 }
-
-/** --- LOGIQUE DU POKÉDEX --- **/
 
 export async function fetchAllPokemons() {
     try {
@@ -115,22 +112,17 @@ async function displayPokemons(pokemonsToDisplay: Pokemon[]) {
     pokemonCards.forEach(card => listElement.appendChild(card.element));
 }
 
-/** --- LOGIQUE DES FILTRES --- **/
-
 function applyAllFilters() {
-    // 1. Récupération des valeurs HTML
     const nameVal = (document.getElementById('search-input') as HTMLInputElement)?.value.toLowerCase() || "";
     const typeVal = (document.getElementById('filter-type') as HTMLSelectElement).value;
     const genVal = parseInt((document.getElementById('filter-gen') as HTMLSelectElement).value);
     const abilityVal = (document.getElementById('filter-ability') as HTMLInputElement).value.toLowerCase();
 
-    // 2. Mise à jour du state
     updateFilters('name', nameVal);
     updateFilters('type', typeVal);
     updateFilters('gen', genVal);
     updateFilters('ability', abilityVal);
 
-    // 3. Filtrage de la liste globale
     const result = allPokemons.filter(p => {
         const matchesName = p.name.toLowerCase().includes(activeFilters.name);
         const matchesType = activeFilters.type === "" || p.types.some(t => t.type.name === activeFilters.type);
@@ -145,21 +137,16 @@ function applyAllFilters() {
     updateDisplay();
 }
 
-// Écouteur pour le bouton SELECT (à placer dans ton code d'init)
 document.getElementById('btn-apply-filters')?.addEventListener('click', applyAllFilters);
 
-// Écouteur pour le bouton RÉINITIALISER
 document.getElementById('btn-reset-filters')?.addEventListener('click', () => {
     resetFilters();
-    // Reset visuel des champs
     (document.getElementById('search-input') as HTMLInputElement).value = "";
     (document.getElementById('filter-type') as HTMLSelectElement).value = "";
     (document.getElementById('filter-gen') as HTMLSelectElement).value = "0";
     (document.getElementById('filter-ability') as HTMLInputElement).value = "";
     updateDisplay();
 });
-
-/** --- LOGIQUE DES ÉVOLUTIONS --- **/
 
 async function getEvolutionData(speciesUrl: string) {
     try {
@@ -187,8 +174,6 @@ async function getEvolutionData(speciesUrl: string) {
         return [];
     }
 }
-
-/** --- DÉTAILS ET AJOUT À L'ÉQUIPE --- **/
 
 export async function showPokemonDetail(id: string) {
     const numericId = parseInt(id);
@@ -312,8 +297,6 @@ export async function showPokemonDetail(id: string) {
 
 (window as any).showPokemonDetail = showPokemonDetail;
 
-/** --- GESTIONNAIRE D'ÉQUIPE VISUEL --- **/
-
 export function updateTeamUI() {
     const teamList = document.getElementById('team-list');
     const teamCount = document.getElementById('team-count');
@@ -362,8 +345,6 @@ export function removeFromTeam(id: number) {
     saveTeam();
     updateTeamUI();
 }
-
-/** --- ANALYSEUR DE TYPES ET FAIBLESSES --- **/
 
 function analyzeTeamTypes() {
     const analysisDiv = document.getElementById('team-analysis');
