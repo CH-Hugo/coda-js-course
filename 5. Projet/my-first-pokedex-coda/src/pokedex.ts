@@ -359,21 +359,6 @@ function analyzeTeamTypes() {
         });
     });
 
-    let html = `<h3>Analyse de l'équipe ${activeTeamId}</h3>`;
-    if (currentTeam.length === 0) {
-        html += '<p>Votre équipe est vide.</p>';
-    } else {
-        for (const [type, count] of Object.entries(typeCounts)) {
-            const isWarning = count >= 3;
-            html += `
-                <div class="analysis-row">
-                    <span class="type-badge ${type}">${type.toUpperCase()}</span> : ${count}
-                    ${isWarning ? `<br><small style="color: #ffcc00"> Risque de faiblesse aux contres ${type}</small>` : ''}
-                </div>
-            `;
-        }
-    }
-    analysisDiv.innerHTML = html;
 }
 
 function updatePaginationUI() {
