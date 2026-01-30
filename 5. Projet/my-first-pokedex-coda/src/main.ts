@@ -22,7 +22,7 @@ roomMusic.loop = true;
 roomMusic.volume = 0.4;
 pokedexMusic.loop = true; 
 pokedexMusic.volume = 0.4;
-
+ 
 window.addEventListener('keydown', (e) => {
     if (!gameStarted) {
         setGameStarted(true);

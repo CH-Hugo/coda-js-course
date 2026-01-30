@@ -368,7 +368,7 @@ function analyzeTeamTypes() {
             html += `
                 <div class="analysis-row">
                     <span class="type-badge ${type}">${type.toUpperCase()}</span> : ${count}
-                    ${isWarning ? `<br><small style="color: #ffcc00">⚠️ Risque de faiblesse aux contres ${type}</small>` : ''}
+                    ${isWarning ? `<br><small style="color: #ffcc00"> Risque de faiblesse aux contres ${type}</small>` : ''}
                 </div>
             `;
         }
